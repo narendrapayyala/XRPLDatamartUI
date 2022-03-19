@@ -24,3 +24,9 @@ export const fetchFieldsListService = (data) =>
     .get(`/${data.connector}/model`)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const fetchFiltersListService = (data) =>
+  axiosConfig
+    .get(`/${data.connector}/${data.route}/params/`)
+    .then((response) => response.data)
+    .catch(handleResponse);

@@ -24,15 +24,9 @@ import { TextFieldFormsy, RadioGroupFormsy } from '../../components/formsy';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import StarIcon from '@mui/icons-material/Star';
-import { getEntityList, getFieldsList } from '../../store/reports/reportsSlice';
+import { getEntityList, getFieldsList, getFiltersList } from '../../store/reports/reportsSlice';
 import LinearProgress from '@mui/material/LinearProgress';
-import SelectFields from './SelectFields';
+import SelectFields from '../../components/SelectFields';
 import DragDropList from '../../components/DragDrop';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     // margin: '20px'
     minHeight: '100%'
+  },
+  fileGen: {
+    marginLeft: '10px'
   },
   main: {
     marginTop: theme.spacing(8),
@@ -56,7 +53,9 @@ const NewReport = () => {
     report_name: '',
     entity_type: '',
     fields: [],
-    filters: []
+    filters: [],
+    type_of_property: '',
+    file_generation: ''
   };
   const { form, handleChange, setForm } = useForm(initialFields);
   const [isFormValid, setIsFormValid] = useState(false);
@@ -65,7 +64,10 @@ const NewReport = () => {
   const loading1 = useSelector(({ loading }) => loading.loading1);
   const loading3 = useSelector(({ loading }) => loading.loading3);
   const entityList = useSelector(({ reports }) => reports.entityList);
+  const fieldsData = useSelector(({ reports }) => reports.fieldsList);
+  const filterParams = useSelector(({ reports }) => reports.filterParams);
   const [checked, setChecked] = useState([]);
+  // console.log(filterParams);
 
   useEffect(() => {
     dispatch(getEntityList());
@@ -168,17 +170,20 @@ const NewReport = () => {
     setIsFormValid(true);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (activeStep === 0) {
-      dispatch(getFieldsList(form)).then((res) => {
+      await dispatch(getFieldsList(form)).then((res) => {
         if (res.payload && res.payload.length != 0) {
           setForm({ ...form, fields: [], filters: [] });
           setChecked([]);
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
       });
-    } else if (activeStep === 1 || activeStep === 2) {
+      await dispatch(getFiltersList(form));
+    } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      console.log(form);
     }
   };
 
@@ -298,69 +303,154 @@ const NewReport = () => {
 
               {activeStep === 1 && (
                 <SelectFields
+                  fieldsData={fieldsData}
+                  isSearch={true}
+                  filters={false}
+                  cmpkey={'select-fields'}
                   fields={form.fields}
                   handleChange={(tmp) => setForm({ ...form, fields: tmp })}
                 />
               )}
 
               {activeStep === 2 && (
+                <SelectFields
+                  fieldsData={filterParams}
+                  filters={true}
+                  cmpkey={'select-filters'}
+                  fields={form.filters}
+                  handleChange={(tmp) => setForm({ ...form, filters: tmp })}
+                />
+              )}
+
+              {activeStep === 3 && (
                 <Box
                   sx={{
                     pl: 4,
                     pr: 4,
-                    pb: 2
+                    pb: 2,
+                    width: '100%'
                   }}>
-                  <Grid
-                    container
-                    direction="row"
-                    sx={{ mb: 2 }}
-                    justifyContent="space-evenly"
-                    alignItems="baseline">
-                    <Grid item>
-                      <Typography sx={{ borderBottom: 1 }} variant="h6">
-                        Selected Fileds
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography sx={{ borderBottom: 1 }} variant="h6">
-                        Filters & Parameters
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    direction="row"
-                    justifyContent="space-evenly"
-                    spacing={2}
-                    sx={{ mb: 2 }}
-                    alignItems="baseline">
-                    <Grid xs={12} md={6} item>
-                      <DragDropList
-                        checked={checked}
-                        setChecked={(tmp) => setChecked(tmp)}
-                        isChekbox={true}
-                        data={form.fields}
-                        onChangeSelected={(tmp) => setForm({ ...form, filters: tmp })}
-                        onChangeList={(tmp) => setForm({ ...form, fields: tmp })}
-                      />
-                    </Grid>
-                    <Grid xs={12} md={6} item>
-                      <List sx={{ width: '100%', maxWidth: 360 }} dense>
-                        {form.filters.map((value) => {
-                          return (
-                            <ListItem key={value}>
-                              <ListItemButton role={undefined} dense>
-                                <ListItemIcon>
-                                  <StarIcon fontSize="small" color="primary" />
-                                </ListItemIcon>
-                                <ListItemText primary={value} />
-                              </ListItemButton>
-                            </ListItem>
-                          );
-                        })}
-                      </List>
-                    </Grid>
-                  </Grid>
+                  <RadioGroupFormsy
+                    className={classes.radio}
+                    margin="normal"
+                    type="radio"
+                    id="type_of_property"
+                    name="type_of_property"
+                    value={form.type_of_property}
+                    onChange={handleChange}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true
+                    }}>
+                    <FormControlLabel
+                      value={'Api'}
+                      disabled
+                      control={<Radio size={'small'} />}
+                      label={<Typography noWrap>Api</Typography>}
+                      sx={{ textTransform: 'capitalize' }}
+                    />
+                    <FormControlLabel
+                      value={'File Generation'}
+                      control={<Radio size={'small'} />}
+                      label={<Typography noWrap>File Generation</Typography>}
+                      sx={{ textTransform: 'capitalize' }}
+                    />
+                    {form.type_of_property && (
+                      <>
+                        <RadioGroupFormsy
+                          margin="normal"
+                          type="radio"
+                          id="file_generation"
+                          name="file_generation"
+                          value={form.file_generation}
+                          onChange={handleChange}
+                          variant="outlined"
+                          required
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true
+                          }}>
+                          <Grid
+                            container
+                            sx={{ ml: 2 }}
+                            direction="row"
+                            justifyContent="space-between"
+                            spacing={2}
+                            alignItems="baseline">
+                            <Grid xs={12} sm={6} md={4} item>
+                              <FormControlLabel
+                                value={'CSV'}
+                                control={<Radio size={'small'} />}
+                                label={<Typography noWrap>{'CSV'}</Typography>}
+                                sx={{ textTransform: 'capitalize' }}
+                              />
+                            </Grid>
+                            <Grid xs={12} sm={6} md={4} item>
+                              <FormControlLabel
+                                disabled
+                                value={'XLSX'}
+                                control={<Radio size={'small'} />}
+                                label={<Typography noWrap>{'XLSX'}</Typography>}
+                                sx={{ textTransform: 'capitalize' }}
+                              />
+                            </Grid>
+                            <Grid xs={12} sm={6} md={4} item>
+                              <FormControlLabel
+                                disabled
+                                value={'PDF'}
+                                control={<Radio size={'small'} />}
+                                label={<Typography noWrap>{'PDF'}</Typography>}
+                                sx={{ textTransform: 'capitalize' }}
+                              />
+                            </Grid>
+                          </Grid>
+                        </RadioGroupFormsy>
+                        {form.file_generation && (
+                          <>
+                            <Grid
+                              container
+                              direction="row"
+                              sx={{ mb: 2, width: '100%', ml: 4, mt: 2 }}
+                              justifyContent="center"
+                              alignItems="center">
+                              <Grid item>
+                                <Typography sx={{ borderBottom: 1 }} variant="h6">
+                                  Change Column Order
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                            <Grid
+                              container
+                              direction="row"
+                              justifyContent="center"
+                              sx={{ mb: 2, width: '100%', ml: 5 }}
+                              alignItems="center">
+                              <Grid xs={12} md={12} item>
+                                <DragDropList
+                                  checked={checked}
+                                  setChecked={(tmp) => setChecked(tmp)}
+                                  isChekbox={false}
+                                  data={form.fields}
+                                  onChangeSelected={(tmp) => setForm({ ...form, filters: tmp })}
+                                  onChangeList={(tmp) => setForm({ ...form, fields: tmp })}
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        )}
+                      </>
+                    )}
+
+                    <FormControlLabel
+                      value={'Database Sync'}
+                      disabled
+                      control={<Radio size={'small'} />}
+                      label={<Typography noWrap>Database Sync</Typography>}
+                      sx={{ textTransform: 'capitalize' }}
+                    />
+                  </RadioGroupFormsy>
                 </Box>
               )}
 

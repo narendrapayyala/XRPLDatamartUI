@@ -93,8 +93,8 @@ const DragDropList = (props) => {
                         {...provided.dragHandleProps}
                         style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                         dense>
-                        <ListItemIcon>
-                          {isChekbox && (
+                        {isChekbox && (
+                          <ListItemIcon>
                             <Checkbox
                               edge="start"
                               checked={checked.indexOf(value) !== -1}
@@ -102,8 +102,8 @@ const DragDropList = (props) => {
                               disableRipple
                               inputProps={{ 'aria-labelledby': labelId }}
                             />
-                          )}
-                        </ListItemIcon>
+                          </ListItemIcon>
+                        )}
                         <ListItemText id={labelId} primary={`${value}`} />
                       </ListItemButton>
                     </ListItem>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+// import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,13 +9,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { TextFieldFormsy } from '../../components/formsy';
+import { TextFieldFormsy } from './formsy';
 import Checkbox from '@mui/material/Checkbox';
 
 const SelectFields = (props) => {
-  const { fields, handleChange } = props;
+  const { fields, handleChange, fieldsData, isSearch, cmpkey, filters } = props;
   const theme = useTheme();
-  const fieldsData = useSelector(({ reports }) => reports.fieldsList);
 
   const [search, setSearch] = useState('');
   const [fieldsList, setFieldsList] = useState(fieldsData);
@@ -43,9 +42,22 @@ const SelectFields = (props) => {
     handleChange(newSelected);
   };
 
+  useEffect(() => {
+    if (filters) {
+      let target = [];
+      fieldsList.map((n) => {
+        if (n.required) {
+          target.push(n.field || n.name);
+        }
+      });
+      handleChange(target);
+      return;
+    }
+  }, [filters]);
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = fieldsList.map((n) => n.field);
+      const newSelecteds = fieldsList.map((n) => n.field || n.name);
       handleChange(newSelecteds);
       return;
     }
@@ -55,8 +67,10 @@ const SelectFields = (props) => {
   const handleSearch = (data) => {
     setSearch(data);
     if (data === '' || data.length > 1) {
-      const target = allFieldsList.filter((item) =>
-        item.field.toLowerCase().includes(data.toLowerCase())
+      const target = allFieldsList.filter(
+        (item) =>
+          item.field.toLowerCase().includes(data.toLowerCase()) ||
+          item.name.toLowerCase().includes(data.toLowerCase())
       );
       setFieldsList(target);
     }
@@ -73,22 +87,25 @@ const SelectFields = (props) => {
         pr: 4,
         pb: 2
       }}>
-      <Grid container direction="row" sx={{ mb: 2 }} justifyContent="center" alignItems="center">
-        <Grid sx={{ width: '60%' }} item>
-          <TextFieldFormsy
-            id="search"
-            name="search"
-            value={search}
-            onChange={(e) => handleSearch(e.target.value)}
-            variant="outlined"
-            placeholder="Search..."
-            fullWidth
-            InputLabelProps={{
-              shrink: true
-            }}
-          />
+      {isSearch && (
+        <Grid container direction="row" sx={{ mb: 2 }} justifyContent="center" alignItems="center">
+          <Grid sx={{ width: '60%' }} item>
+            <TextFieldFormsy
+              id="search"
+              name="search"
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              variant="outlined"
+              placeholder="Search..."
+              fullWidth
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
+
       <TableContainer>
         <Table sx={{ minWidth: 750 }} size="small" aria-label="simple table">
           <TableHead>
@@ -96,6 +113,7 @@ const SelectFields = (props) => {
               <TableCell>
                 <Checkbox
                   color="primary"
+                  disabled={filters}
                   indeterminate={fields.length > 0 && fields.length < fieldsList.length}
                   checked={fieldsList.length > 0 && fields.length === fieldsList.length}
                   onChange={handleSelectAllClick}
@@ -111,13 +129,15 @@ const SelectFields = (props) => {
           </TableHead>
           <TableBody>
             {fieldsList.map((res, i) => {
-              const isItemSelected = isSelected(res.field);
-              const labelId = `enhanced-table-checkbox-${i}`;
+              const isItemSelected = isSelected(res.field || res.name);
+              const labelId = `${cmpkey}-${i}`;
 
               return (
                 <TableRow
-                  key={res.field + i}
-                  onClick={(event) => handleClick(event, res.field)}
+                  key={res.field || res.name + i + labelId}
+                  onClick={(event) =>
+                    filters && res.required ? '' : handleClick(event, res.field || res.name)
+                  }
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}
@@ -130,6 +150,7 @@ const SelectFields = (props) => {
                   }}>
                   <TableCell>
                     <Checkbox
+                      disabled={filters ? res.required : false}
                       color="primary"
                       checked={isItemSelected}
                       inputProps={{
@@ -137,7 +158,7 @@ const SelectFields = (props) => {
                       }}
                     />
                   </TableCell>
-                  <TableCell>{res.field}</TableCell>
+                  <TableCell>{res.field || res.name}</TableCell>
                   <TableCell align="right">{res.type}</TableCell>
                   <TableCell align="right">{res.description}</TableCell>
                 </TableRow>

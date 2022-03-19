@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { showMessage } from '../messageSlice';
 import { startLoading1, clearLoading1, startLoading3, clearLoading3 } from '../loaderSlice';
-import { fetchEntityService, fetchFieldsListService } from '../../services/reports/reportService';
+import {
+  fetchEntityService,
+  fetchFieldsListService,
+  fetchFiltersListService
+} from '../../services/reports/reportService';
 
 export const getEntityList = createAsyncThunk('reports/getEntityList', async (id, { dispatch }) => {
   dispatch(startLoading3());
@@ -57,11 +61,42 @@ export const getFieldsList = createAsyncThunk(
   }
 );
 
+export const getFiltersList = createAsyncThunk(
+  'reports/getFiltersList',
+  async (data, { dispatch, getState }) => {
+    const state = getState().reports;
+    const entityList = state.entityList;
+    const entityData = entityList.find((res) => res.method === data.entity_type);
+    dispatch(startLoading1());
+    try {
+      const response = await fetchFiltersListService(entityData);
+      // console.log(response);
+      if (response.status) {
+        dispatch(clearLoading1());
+        return response.req_parameters;
+      }
+      dispatch(clearLoading1());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return [];
+    } catch (error) {
+      dispatch(clearLoading1());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return [];
+    }
+  }
+);
+
 const reportsSlice = createSlice({
   name: 'reports',
   initialState: {
     entityList: [],
-    fieldsList: []
+    fieldsList: [],
+    filterParams: []
   },
   reducers: {},
   extraReducers: {
@@ -70,6 +105,9 @@ const reportsSlice = createSlice({
     },
     [getFieldsList.fulfilled]: (state, action) => {
       return { ...state, fieldsList: action.payload };
+    },
+    [getFiltersList.fulfilled]: (state, action) => {
+      return { ...state, filterParams: action.payload };
     }
   }
 });
