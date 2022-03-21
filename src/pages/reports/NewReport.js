@@ -95,13 +95,13 @@ const NewReport = () => {
     [`&.${stepConnectorClasses.active}`]: {
       [`& .${stepConnectorClasses.line}`]: {
         backgroundImage:
-          'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+          'linear-gradient( 95deg,rgb(9, 118, 219) 0%,rgb(9, 118, 219) 50%,rgb(9, 118, 219) 100%)'
       }
     },
     [`&.${stepConnectorClasses.completed}`]: {
       [`& .${stepConnectorClasses.line}`]: {
         backgroundImage:
-          'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+          'linear-gradient( 95deg,rgb(9, 118, 219) 0%,rgb(9, 118, 219) 50%,rgb(9, 118, 219) 100%)'
       }
     },
     [`& .${stepConnectorClasses.line}`]: {
@@ -124,12 +124,12 @@ const NewReport = () => {
     alignItems: 'center',
     ...(ownerState.active && {
       backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+        'linear-gradient( 136deg, rgb(9, 118, 219) 0%, rgb(9, 118, 219) 50%, rgb(9, 118, 219) 100%)',
       boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
     }),
     ...(ownerState.completed && {
       backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
+        'linear-gradient( 136deg, rgb(9, 118, 219) 0%, rgb(9, 118, 219) 50%, rgb(9, 118, 219) 100%)'
     })
   }));
 
@@ -219,17 +219,17 @@ const NewReport = () => {
       <Box
         sx={{
           width: '100%',
-          height: 135,
+          height: 65,
           backgroundColor: 'primary.dark'
         }}>
-        <Grid container direction="row" sx={{ p: 3, ml: 2 }}>
+        <Grid container direction="row" sx={{ p: 1.5, ml: 2 }}>
           <Grid item>
-            <Typography color="primary.contrastText" variant="h4" fontWeight={'bold'}>
+            <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
               Create new report
             </Typography>
-            <Typography sx={{ mt: 1, mr: 1 }} color="primary.contrastText">
+            {/* <Typography sx={{ mt: 1, mr: 1 }} color="primary.contrastText">
               Select one of the queries below to request your report.
-            </Typography>
+            </Typography> */}
           </Grid>
         </Grid>
       </Box>
@@ -478,75 +478,68 @@ const NewReport = () => {
 
               {activeStep === 4 && (
                 <Box sx={{ width: '100%' }}>
-                  <Grid container direction="row" justifyContent="center" alignItems="center">
-                    <Grid item>
-                      <Typography color="primary.main" variant="h4" fontWeight={'bold'}>
-                        {form.report_name}
-                      </Typography>
-                    </Grid>
-                  </Grid>
                   <Grid
+                    sx={{ mb: 2 }}
                     container
                     direction="row"
-                    sx={{ mb: 2 }}
                     justifyContent="center"
                     alignItems="center">
                     <Grid item>
-                      <Typography
-                        color="secondary.main"
-                        variant="h5"
-                        fontWeight={'bold'}
-                        sx={{ textTransform: 'capitalize' }}>
+                      <Typography color="primary.main" variant="h5" fontWeight={'bold'}>
+                        {form.report_name} -{' '}
                         {entityList.find((res) => res.method === form.entity_type).name}
                       </Typography>
                     </Grid>
                   </Grid>
-                  <Accordion expanded={expanded1} onChange={(e, value) => setExpanded1(value)}>
+                  <Accordion
+                    sx={{ background: theme.palette.grey[100] }}
+                    expanded={expanded1}
+                    onChange={(e, value) => setExpanded1(value)}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="fields-content"
                       id="fields-header">
-                      <Typography variant="h6" fontWeight={'bold'}>
-                        Selected Fields
-                      </Typography>
+                      <Typography>Selected Fields</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <List sx={{ p: 0 }}>
                         {form.fields.map((res, i) => (
                           <ListItem key={i}>
-                            <ListItemText primary={i + 1 + ') ' + res} />
+                            <ListItemText primary={i + 1 + '. ' + res} />
                           </ListItem>
                         ))}
                       </List>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion expanded={expanded2} onChange={(e, value) => setExpanded2(value)}>
+                  <Accordion
+                    sx={{ background: theme.palette.grey[100] }}
+                    expanded={expanded2}
+                    onChange={(e, value) => setExpanded2(value)}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="filters-content"
                       id="filters-header">
-                      <Typography variant="h6" fontWeight={'bold'}>
-                        Selected Parameters
-                      </Typography>
+                      <Typography>Selected Parameters</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <List sx={{ p: 0 }}>
                         {form.filters.map((res, i) => (
                           <ListItem key={i}>
-                            <ListItemText primary={i + 1 + ') ' + res} />
+                            <ListItemText primary={i + 1 + '. ' + res} />
                           </ListItem>
                         ))}
                       </List>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion expanded={expanded3} onChange={(e, value) => setExpanded3(value)}>
+                  <Accordion
+                    sx={{ background: theme.palette.grey[100] }}
+                    expanded={expanded3}
+                    onChange={(e, value) => setExpanded3(value)}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="properties-content"
                       id="properties-header">
-                      <Typography variant="h6" fontWeight={'bold'}>
-                        Properties
-                      </Typography>
+                      <Typography>Properties</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <List sx={{ p: 0 }}>

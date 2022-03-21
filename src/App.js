@@ -22,19 +22,19 @@ const theme = createTheme({
   palette: {
     primary: {
       light: '#006097',
-      main: '#006097',
-      dark: '#006097',
+      main: '#0976db',
+      dark: '#0976db',
       contrastText: '#ffffff'
     },
     secondary: {
-      light: '#00aae480',
-      main: '#00aae4',
-      dark: '#00aae4',
+      light: '#0976db80',
+      main: '#0976db80',
+      dark: '#0976db80',
       contrastText: '#272727'
     },
     background: {
       paper: '#FFFFFF',
-      default: '#F0F7F7'
+      default: '#FFFFFF'
     }
   }
 });
