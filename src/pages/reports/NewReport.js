@@ -24,10 +24,22 @@ import { TextFieldFormsy, RadioGroupFormsy } from '../../components/formsy';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getEntityList, getFieldsList, getFiltersList } from '../../store/reports/reportsSlice';
+import {
+  getEntityList,
+  getFieldsList,
+  getFiltersList,
+  createReport
+} from '../../store/reports/reportsSlice';
 import LinearProgress from '@mui/material/LinearProgress';
 import SelectFields from '../../components/SelectFields';
 import DragDropList from '../../components/DragDrop';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,7 +66,7 @@ const NewReport = () => {
     entity_type: '',
     fields: [],
     filters: [],
-    type_of_property: '',
+    property_type: '',
     file_generation: ''
   };
   const { form, handleChange, setForm } = useForm(initialFields);
@@ -67,6 +79,9 @@ const NewReport = () => {
   const fieldsData = useSelector(({ reports }) => reports.fieldsList);
   const filterParams = useSelector(({ reports }) => reports.filterParams);
   const [checked, setChecked] = useState([]);
+  const [expanded1, setExpanded1] = useState(true);
+  const [expanded2, setExpanded2] = useState(true);
+  const [expanded3, setExpanded3] = useState(true);
   // console.log(filterParams);
 
   useEffect(() => {
@@ -183,7 +198,14 @@ const NewReport = () => {
     } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
-      console.log(form);
+      // console.log(form);
+      dispatch(
+        createReport({
+          ...form,
+          fields: JSON.stringify(form.fields),
+          filters: JSON.stringify(form.filters)
+        })
+      );
     }
   };
 
@@ -334,9 +356,9 @@ const NewReport = () => {
                     className={classes.radio}
                     margin="normal"
                     type="radio"
-                    id="type_of_property"
-                    name="type_of_property"
-                    value={form.type_of_property}
+                    id="property_type"
+                    name="property_type"
+                    value={form.property_type}
                     onChange={handleChange}
                     variant="outlined"
                     required
@@ -357,7 +379,7 @@ const NewReport = () => {
                       label={<Typography noWrap>File Generation</Typography>}
                       sx={{ textTransform: 'capitalize' }}
                     />
-                    {form.type_of_property && (
+                    {form.property_type && (
                       <>
                         <RadioGroupFormsy
                           margin="normal"
@@ -451,6 +473,92 @@ const NewReport = () => {
                       sx={{ textTransform: 'capitalize' }}
                     />
                   </RadioGroupFormsy>
+                </Box>
+              )}
+
+              {activeStep === 4 && (
+                <Box sx={{ width: '100%' }}>
+                  <Grid container direction="row" justifyContent="center" alignItems="center">
+                    <Grid item>
+                      <Typography color="primary.main" variant="h4" fontWeight={'bold'}>
+                        {form.report_name}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="row"
+                    sx={{ mb: 2 }}
+                    justifyContent="center"
+                    alignItems="center">
+                    <Grid item>
+                      <Typography
+                        color="secondary.main"
+                        variant="h5"
+                        fontWeight={'bold'}
+                        sx={{ textTransform: 'capitalize' }}>
+                        {entityList.find((res) => res.method === form.entity_type).name}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Accordion expanded={expanded1} onChange={(e, value) => setExpanded1(value)}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="fields-content"
+                      id="fields-header">
+                      <Typography variant="h6" fontWeight={'bold'}>
+                        Selected Fields
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List sx={{ p: 0 }}>
+                        {form.fields.map((res, i) => (
+                          <ListItem key={i}>
+                            <ListItemText primary={i + 1 + ') ' + res} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion expanded={expanded2} onChange={(e, value) => setExpanded2(value)}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="filters-content"
+                      id="filters-header">
+                      <Typography variant="h6" fontWeight={'bold'}>
+                        Selected Parameters
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List sx={{ p: 0 }}>
+                        {form.filters.map((res, i) => (
+                          <ListItem key={i}>
+                            <ListItemText primary={i + 1 + ') ' + res} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion expanded={expanded3} onChange={(e, value) => setExpanded3(value)}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="properties-content"
+                      id="properties-header">
+                      <Typography variant="h6" fontWeight={'bold'}>
+                        Properties
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List sx={{ p: 0 }}>
+                        <ListItem>
+                          <ListItemText
+                            primary={form.property_type}
+                            secondary={form.file_generation}
+                          />
+                        </ListItem>
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
                 </Box>
               )}
 

@@ -30,3 +30,9 @@ export const fetchFiltersListService = (data) =>
     .get(`/${data.connector}/${data.route}/params/`)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const createReportService = (entity, data) =>
+  axiosConfig
+    .post(`/${entity.connector}/${entity.route}/template`, data)
+    .then((response) => response.data)
+    .catch(handleResponse);
