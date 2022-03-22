@@ -5,9 +5,37 @@ import {
   fetchEntityService,
   fetchFieldsListService,
   fetchFiltersListService,
-  createReportService
+  createReportService,
+  fetchTemplatesListService
 } from '../../services/reports/reportService';
 import history from '../../configurations/@history';
+
+export const getTemplatesList = createAsyncThunk(
+  'reports/getTemplatesList',
+  async (id, { dispatch }) => {
+    dispatch(startLoading3());
+    try {
+      const response = await fetchTemplatesListService();
+      // console.log(response);
+      if (response.status) {
+        dispatch(clearLoading3());
+        return response.templates;
+      }
+      dispatch(clearLoading3());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return [];
+    } catch (error) {
+      dispatch(clearLoading3());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return [];
+    }
+  }
+);
 
 export const getEntityList = createAsyncThunk('reports/getEntityList', async (id, { dispatch }) => {
   dispatch(startLoading3());
@@ -132,7 +160,8 @@ const reportsSlice = createSlice({
   initialState: {
     entityList: [],
     fieldsList: [],
-    filterParams: []
+    filterParams: [],
+    templatesList: []
   },
   reducers: {},
   extraReducers: {
@@ -147,6 +176,9 @@ const reportsSlice = createSlice({
     },
     [createReport.fulfilled]: (state) => {
       return { ...state };
+    },
+    [getTemplatesList.fulfilled]: (state, action) => {
+      return { ...state, templatesList: action.payload };
     }
   }
 });

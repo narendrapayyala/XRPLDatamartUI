@@ -36,3 +36,9 @@ export const createReportService = (entity, data) =>
     .post(`/${entity.connector}/${entity.route}/template`, data)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const fetchTemplatesListService = () =>
+  axiosConfig
+    .get(`/entity/report-templates/list`)
+    .then((response) => response.data)
+    .catch(handleResponse);
