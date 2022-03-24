@@ -6,7 +6,9 @@ import {
   fetchFieldsListService,
   fetchFiltersListService,
   createReportService,
-  fetchTemplatesListService
+  fetchTemplatesListService,
+  generateReportService,
+  downloadCSVReportService
 } from '../../services/reports/reportService';
 import history from '../../configurations/@history';
 
@@ -155,15 +157,80 @@ export const createReport = createAsyncThunk(
   }
 );
 
+export const generateReport = createAsyncThunk(
+  'reports/generateReport',
+  async (data, { dispatch, getState }) => {
+    const state = getState().reports;
+    const entityList = state.entityList;
+    const entityData = entityList.find((res) => res.method === data.entity_type);
+    dispatch(startLoading1());
+    try {
+      const response = await generateReportService(entityData, data);
+      // console.log(response);
+      if (response.status) {
+        dispatch(clearLoading1());
+        return response.report_data;
+      }
+      dispatch(clearLoading1());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return [];
+    } catch (error) {
+      dispatch(clearLoading1());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return [];
+    }
+  }
+);
+
+export const downloadCSVReport = createAsyncThunk(
+  'reports/downloadCSVReport',
+  async (data, { dispatch, getState }) => {
+    const state = getState().reports;
+    const entityList = state.entityList;
+    const entityData = entityList.find((res) => res.method === data.entity_type);
+    dispatch(startLoading1());
+    try {
+      const response = await downloadCSVReportService(entityData, data);
+      // console.log(response);
+      if (response) {
+        dispatch(clearLoading1());
+        return response;
+      }
+      dispatch(clearLoading1());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return null;
+    } catch (error) {
+      dispatch(clearLoading1());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return null;
+    }
+  }
+);
+
 const reportsSlice = createSlice({
   name: 'reports',
   initialState: {
     entityList: [],
     fieldsList: [],
     filterParams: [],
-    templatesList: []
+    templatesList: [],
+    reportList: []
   },
-  reducers: {},
+  reducers: {
+    clearReportList: (state) => {
+      return { ...state, reportList: [] };
+    }
+  },
   extraReducers: {
     [getEntityList.fulfilled]: (state, action) => {
       return { ...state, entityList: action.payload };
@@ -179,10 +246,16 @@ const reportsSlice = createSlice({
     },
     [getTemplatesList.fulfilled]: (state, action) => {
       return { ...state, templatesList: action.payload };
+    },
+    [generateReport.fulfilled]: (state, action) => {
+      return { ...state, reportList: action.payload };
+    },
+    [downloadCSVReport.fulfilled]: (state) => {
+      return { ...state };
     }
   }
 });
 
-// export const {} = reportsSlice.actions;
+export const { clearReportList } = reportsSlice.actions;
 
 export default reportsSlice.reducer;

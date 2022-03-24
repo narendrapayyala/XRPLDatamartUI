@@ -17,6 +17,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
+import History from '../../configurations/@history';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -161,7 +162,7 @@ const Home = () => {
                   lg={3}
                   sx={{ mt: 1 }}
                   item>
-                  <Card sx={{ maxWidth: 250 }} onClick={() => console.log(res)}>
+                  <Card sx={{ maxWidth: 250 }} onClick={() => History.push(`/report/${res.uuid}`)}>
                     <CardActionArea>
                       <CardMedia component="img" image={'xrp-logo.png'} alt={res.report_name} />
                       <CardContent>

@@ -198,12 +198,32 @@ const NewReport = () => {
     } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
-      // console.log(form);
-      dispatch(
+      const target = [];
+      await fieldsData.map((res) => {
+        form.fields.map((res1, i) => {
+          if (res.field === res1) {
+            target.push({
+              field: res.field,
+              field_normalized: res.field_normalized,
+              type: res.type,
+              order: i
+            });
+          }
+        });
+      });
+      const targetFilters = [];
+      await filterParams.map((res) => {
+        form.filters.map((res1) => {
+          if (res.name === res1) {
+            targetFilters.push(res);
+          }
+        });
+      });
+      await dispatch(
         createReport({
           ...form,
-          fields: JSON.stringify(form.fields),
-          filters: JSON.stringify(form.filters)
+          fields: JSON.stringify(target),
+          filters: JSON.stringify(targetFilters)
         })
       );
     }
@@ -222,7 +242,7 @@ const NewReport = () => {
           height: 65,
           backgroundColor: 'primary.dark'
         }}>
-        <Grid container direction="row" sx={{ p: 1.5, ml: 2 }}>
+        <Grid container direction="row" sx={{ p: 1.5 }}>
           <Grid item>
             <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
               Create new report
@@ -411,16 +431,6 @@ const NewReport = () => {
                             </Grid>
                             <Grid xs={12} sm={6} md={4} item>
                               <FormControlLabel
-                                disabled
-                                value={'XLSX'}
-                                control={<Radio size={'small'} />}
-                                label={<Typography noWrap>{'XLSX'}</Typography>}
-                                sx={{ textTransform: 'capitalize' }}
-                              />
-                            </Grid>
-                            <Grid xs={12} sm={6} md={4} item>
-                              <FormControlLabel
-                                disabled
                                 value={'PDF'}
                                 control={<Radio size={'small'} />}
                                 label={<Typography noWrap>{'PDF'}</Typography>}
@@ -438,16 +448,20 @@ const NewReport = () => {
                               justifyContent="center"
                               alignItems="center">
                               <Grid item>
-                                <Typography sx={{ borderBottom: 1 }} variant="h6">
-                                  Change Column Order
-                                </Typography>
+                                <Typography variant="h6">Change Column Order</Typography>
                               </Grid>
                             </Grid>
                             <Grid
                               container
                               direction="row"
                               justifyContent="center"
-                              sx={{ mb: 2, width: '100%', ml: 5 }}
+                              sx={{
+                                mb: 2,
+                                width: '100%',
+                                ml: 5,
+                                border: 2,
+                                borderColor: theme.palette.grey[300]
+                              }}
                               alignItems="center">
                               <Grid xs={12} md={12} item>
                                 <DragDropList
@@ -502,7 +516,7 @@ const NewReport = () => {
                       <Typography>Selected Fields</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <List sx={{ p: 0 }}>
+                      <List sx={{ p: 0 }} dense>
                         {form.fields.map((res, i) => (
                           <ListItem key={i}>
                             <ListItemText primary={i + 1 + '. ' + res} />
@@ -522,7 +536,7 @@ const NewReport = () => {
                       <Typography>Selected Parameters</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <List sx={{ p: 0 }}>
+                      <List sx={{ p: 0 }} dense>
                         {form.filters.map((res, i) => (
                           <ListItem key={i}>
                             <ListItemText primary={i + 1 + '. ' + res} />
@@ -542,7 +556,7 @@ const NewReport = () => {
                       <Typography>Properties</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <List sx={{ p: 0 }}>
+                      <List sx={{ p: 0 }} dense>
                         <ListItem>
                           <ListItemText
                             primary={form.property_type}

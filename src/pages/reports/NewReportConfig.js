@@ -28,6 +28,10 @@ const NewReportConfig = {
     {
       path: '/new_report',
       component: React.lazy(() => import('./NewReport'))
+    },
+    {
+      path: '/report/:id',
+      component: React.lazy(() => import('./ReportView'))
     }
   ]
 };
