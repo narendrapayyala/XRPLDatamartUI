@@ -25,6 +25,9 @@ import { useForm } from '../../components/hooks';
 import Formsy from 'formsy-react';
 import { TextFieldFormsy, RadioGroupFormsy } from '../../components/formsy';
 import Radio from '@mui/material/Radio';
+import Chip from '@mui/material/Chip';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {
   clearReportList,
@@ -54,7 +57,7 @@ const ReportView = () => {
   const [value, setValue] = useState('1');
   const loading1 = useSelector(({ loading }) => loading.loading1);
   const [initialFields, setInitialFields] = useState({});
-  const { form, handleChange } = useForm(initialFields);
+  const { form, handleChange, setForm } = useForm(initialFields);
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
@@ -68,9 +71,22 @@ const ReportView = () => {
         const target2 = target1.filter((res) => res.name != 'command');
         const iniFields = target2.reduce((obj, item) => ({ ...obj, [item.name]: '' }), {});
         const fieldsTarget = JSON.parse(target.fields);
-        setInitialFields(iniFields);
-        // console.log(iniFields);
-        setFilters(target2);
+        // console.log(target);
+        if (target.entity_type === 'account_info') {
+          const tmp = { ...iniFields, accounts: [] };
+          delete tmp.account;
+          const tmp1 = target2.map((res) => {
+            if (res.name === 'account') {
+              return { ...res, name: 'accounts' };
+            }
+            return res;
+          });
+          setInitialFields(tmp);
+          setFilters(tmp1);
+        } else {
+          setInitialFields(iniFields);
+          setFilters(target2);
+        }
         setFields(fieldsTarget);
         setTemplatedata(target);
       }
@@ -90,6 +106,8 @@ const ReportView = () => {
   const enableButton = () => {
     setIsFormValid(true);
   };
+
+  const options = [];
 
   const handleSubmit = () => {
     const data = {
@@ -179,22 +197,63 @@ const ReportView = () => {
                   {filters.map((res, i) =>
                     res.type != 'boolean' ? (
                       <Grid key={i} sx={{ width: '100%' }} item>
-                        <TextFieldFormsy
-                          label={res.name}
-                          id={res.name}
-                          name={res.name}
-                          type={res.type}
-                          value={form[res.name]}
-                          onChange={handleChange}
-                          variant="outlined"
-                          required
-                          fullWidth
-                          // focused
-                          InputLabelProps={{
-                            shrink: true
-                          }}
-                          // size="small"
-                        />
+                        {res.name === 'accounts' ? (
+                          <>
+                            <Autocomplete
+                              multiple
+                              freeSolo
+                              options={options}
+                              value={form.accounts ? form.accounts : []}
+                              onChange={(event, newValue) => {
+                                setForm({ ...form, accounts: newValue });
+                              }}
+                              renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                  <Chip
+                                    key={index}
+                                    variant="outlined"
+                                    label={option}
+                                    {...getTagProps({ index })}
+                                  />
+                                ))
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  variant="outlined"
+                                  fullWidth
+                                  label={'Accounts *'}
+                                  id={res.name}
+                                  name={res.name}
+                                  InputLabelProps={{
+                                    shrink: true
+                                  }}
+                                />
+                              )}
+                            />
+                            <small>
+                              Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
+                              rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
+                            </small>
+                          </>
+                        ) : (
+                          <TextFieldFormsy
+                            label={res.name}
+                            id={res.name}
+                            name={res.name}
+                            type={res.type}
+                            value={form[res.name]}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            // focused
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                            // size="small"
+                          />
+                        )}
                       </Grid>
                     ) : (
                       <Grid
@@ -239,16 +298,19 @@ const ReportView = () => {
                   )}
                 </Grid>
               </Box>
-
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                 <Button
-                  sx={{ mt: 1, mb: 1, px: 6 }}
+                  sx={{ mt: 1, mb: 1, px: 4 }}
                   type="submit"
                   // fullWidth
                   variant="contained"
                   color="primary"
                   className={classes.submit}
-                  disabled={!isFormValid || loading1}
+                  disabled={
+                    !isFormValid ||
+                    loading1 ||
+                    (templateData.entity_type === 'account_info' && !form.accounts)
+                  }
                   aria-label="Register"
                   style={{ textTransform: 'capitalize', fontSize: '16px' }}>
                   {loading1 ? <CircularProgress size={24} olor="inherit" /> : 'Request Report'}
@@ -278,7 +340,7 @@ const ReportView = () => {
                           type="button">
                           {loading1 ? (
                             <>
-                              <CircularProgress size={20} color="secondary" className="mr-6" />
+                              <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
                               <span>DOWNLOAD CSV</span>
                             </>
                           ) : (
@@ -331,9 +393,16 @@ const ReportView = () => {
                             '&:last-child td, &:last-child th': { border: 0 }
                           }}>
                           {Object.keys(row).map((key, index) => {
-                            //   const type = fields.find((res) => res.field === key).type;
-                            //   console.log(type);
-                            return <TableCell key={i + index}>{row[key]}</TableCell>;
+                            const fdata = fields.find((res) => res.field === key);
+                            const type = fdata ? fdata.type : null;
+                            // console.log(type);
+                            return type && type === 'Boolean' ? (
+                              <TableCell key={row[key] + index + 'body'}>
+                                {row[key] ? 'Yes' : 'No'}
+                              </TableCell>
+                            ) : (
+                              <TableCell key={i + index + 'body'}>{row[key]}</TableCell>
+                            );
                           })}
                         </TableRow>
                       ))}
