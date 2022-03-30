@@ -34,6 +34,7 @@ import {
   generateReport,
   downloadCSVReport
 } from '../../store/reports/reportsSlice';
+import moment from 'moment';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -231,10 +232,10 @@ const ReportView = () => {
                                 />
                               )}
                             />
-                            <small>
+                            <Typography variant="caption" color={theme.palette.grey[600]}>
                               Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
                               rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
-                            </small>
+                            </Typography>
                           </>
                         ) : (
                           <TextFieldFormsy
@@ -373,14 +374,14 @@ const ReportView = () => {
               )}
               <TableContainer>
                 {reportList.length != 0 && (
-                  <Table sx={{ minWidth: 750 }} size="small" aria-label="simple table">
+                  <Table sx={{ minWidth: 750 }} aria-label="simple table">
                     <TableHead>
                       <TableRow>
                         {fields
                           .sort((a, b) => a.order - b.order)
                           .map((row, i) => (
                             <TableCell sx={{ textTransform: 'capitalize' }} key={i + 'header'}>
-                              {row.field}
+                              <Typography noWrap>{row.field}</Typography>
                             </TableCell>
                           ))}
                       </TableRow>
@@ -395,13 +396,20 @@ const ReportView = () => {
                           {Object.keys(row).map((key, index) => {
                             const fdata = fields.find((res) => res.field === key);
                             const type = fdata ? fdata.type : null;
-                            // console.log(type);
                             return type && type === 'Boolean' ? (
                               <TableCell key={row[key] + index + 'body'}>
                                 {row[key] ? 'Yes' : 'No'}
                               </TableCell>
+                            ) : key === 'time' ? (
+                              <TableCell key={i + index + 'body'}>
+                                <Typography noWrap>
+                                  {moment(row[key]).format('DD-MMM-YYYY HH:MM:SS')}
+                                </Typography>
+                              </TableCell>
                             ) : (
-                              <TableCell key={i + index + 'body'}>{row[key]}</TableCell>
+                              <TableCell key={i + index + 'body'}>
+                                <Typography noWrap>{row[key]}</Typography>
+                              </TableCell>
                             );
                           })}
                         </TableRow>
