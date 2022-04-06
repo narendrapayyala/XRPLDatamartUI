@@ -13,7 +13,8 @@ import { TextFieldFormsy } from './formsy';
 import Checkbox from '@mui/material/Checkbox';
 
 const SelectFields = (props) => {
-  const { fields, handleChange, fieldsData, isSearch, cmpkey, filters } = props;
+  const { fields, handleChange, fieldsData, isSearch, cmpkey, filters, activeStep, updateStatus } =
+    props;
   const theme = useTheme();
 
   const [search, setSearch] = useState('');
@@ -44,12 +45,14 @@ const SelectFields = (props) => {
 
   useEffect(() => {
     if (filters) {
-      let target = [];
-      fieldsList.map((n) => {
-        if (n.required) {
-          target.push(n.field || n.name);
-        }
-      });
+      let target = updateStatus ? [...fields] : [];
+      if (!updateStatus) {
+        fieldsList.map((n) => {
+          if (n.required) {
+            target.push(n.name);
+          }
+        });
+      }
       handleChange(target);
       return;
     }
@@ -67,12 +70,17 @@ const SelectFields = (props) => {
   const handleSearch = (data) => {
     setSearch(data);
     if (data === '' || data.length > 1) {
-      const target = allFieldsList.filter(
-        (item) =>
-          item.field.toLowerCase().includes(data.toLowerCase()) ||
+      if (activeStep === 1) {
+        const target = allFieldsList.filter((item) =>
+          item.field.toLowerCase().includes(data.toLowerCase())
+        );
+        setFieldsList(target);
+      } else if (activeStep === 2) {
+        const target = allFieldsList.filter((item) =>
           item.name.toLowerCase().includes(data.toLowerCase())
-      );
-      setFieldsList(target);
+        );
+        setFieldsList(target);
+      }
     }
   };
 

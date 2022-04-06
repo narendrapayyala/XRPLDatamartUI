@@ -6,6 +6,7 @@ import {
   fetchFieldsListService,
   fetchFiltersListService,
   createReportService,
+  updateReportService,
   fetchTemplatesListService,
   generateReportService,
   downloadCSVReportService
@@ -157,6 +158,38 @@ export const createReport = createAsyncThunk(
   }
 );
 
+export const updateReport = createAsyncThunk(
+  'reports/updateReport',
+  async (data, { dispatch, getState }) => {
+    const state = getState().reports;
+    const entityList = state.entityList;
+    const entityData = entityList.find((res) => res.method === data.entity_type);
+    dispatch(startLoading1());
+    try {
+      const response = await updateReportService(entityData, data);
+      console.log(response);
+      if (response.status) {
+        dispatch(clearLoading1());
+        dispatch(showMessage({ message: 'Report updated successfully', variant: 'success' }));
+        dispatch(getTemplatesList());
+        return history.push(`/report/${data.uuid}`);
+      }
+      dispatch(clearLoading1());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return null;
+    } catch (error) {
+      dispatch(clearLoading1());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return null;
+    }
+  }
+);
+
 export const generateReport = createAsyncThunk(
   'reports/generateReport',
   async (data, { dispatch, getState }) => {
@@ -242,6 +275,9 @@ const reportsSlice = createSlice({
       return { ...state, filterParams: action.payload };
     },
     [createReport.fulfilled]: (state) => {
+      return { ...state };
+    },
+    [updateReport.fulfilled]: (state) => {
       return { ...state };
     },
     [getTemplatesList.fulfilled]: (state, action) => {

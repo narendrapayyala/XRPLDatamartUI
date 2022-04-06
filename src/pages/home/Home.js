@@ -14,10 +14,13 @@ import Typography from '@mui/material/Typography';
 import lodash from '../../configurations/@lodash';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import { CardActionArea } from '@mui/material';
 import History from '../../configurations/@history';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CardHeader from '@mui/material/CardHeader';
+import Skeleton from '@mui/material/Skeleton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,10 +40,26 @@ const Home = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const templatesList = useSelector(({ reports }) => reports.templatesList);
+  const loading3 = useSelector(({ loading }) => loading.loading3);
   const entityList = useSelector(({ reports }) => reports.entityList);
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Entities');
   const [filteredData, setFilteredData] = useState(null);
+  const [singleTemp, setSingleTemp] = useState(null);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event, data) => {
+    setAnchorEl(event.currentTarget);
+    setSingleTemp(data);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSingleTemp(null);
+  };
+
+  const ITEM_HEIGHT = 48;
 
   // console.log(templatesList, entityList);
   useEffect(() => {
@@ -131,7 +150,8 @@ const Home = () => {
           </FormControl>
         </Grid>
       </Grid>
-      {filteredData &&
+      {!loading3 &&
+        filteredData &&
         Object.keys(filteredData).map((key, i) => (
           <Box key={i}>
             <Grid
@@ -162,24 +182,107 @@ const Home = () => {
                   lg={3}
                   sx={{ mt: 1 }}
                   item>
-                  <Card sx={{ maxWidth: 250 }} onClick={() => History.push(`/report/${res.uuid}`)}>
-                    <CardActionArea>
-                      <CardMedia component="img" image={'xrp-logo.png'} alt={res.report_name} />
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
+                  <Card sx={{ maxWidth: 250 }}>
+                    <CardMedia
+                      onClick={() => History.push(`/report/${res.uuid}`)}
+                      sx={{ cursor: 'pointer' }}
+                      component="img"
+                      image={'xrp-logo.png'}
+                      alt={res.report_name}
+                    />
+                    <CardHeader
+                      action={
+                        <IconButton
+                          aria-label="more"
+                          sx={{
+                            ':hover': {
+                              backgroundColor: 'primary.main',
+                              color: 'primary.contrastText'
+                            }
+                          }}
+                          id="long-button"
+                          aria-controls={open ? 'long-menu' : undefined}
+                          aria-expanded={open ? 'true' : undefined}
+                          aria-haspopup="true"
+                          onClick={(e) => handleClick(e, res)}>
+                          <MoreVertIcon />
+                        </IconButton>
+                      }
+                      title={
+                        <Typography variant="h6" component="div">
                           {res.report_name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                      }
+                      subheader={
+                        <Typography variant="body2" sx={{ ml: 0.3 }} color="text.secondary">
                           {res.property_type} - {res.file_generation}
                         </Typography>
-                      </CardContent>
-                    </CardActionArea>
+                      }
+                    />
                   </Card>
                 </Grid>
               ))}
             </Grid>
           </Box>
         ))}
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button'
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch'
+          }
+        }}>
+        <MenuItem
+          onClick={() => {
+            History.push(`/report/${singleTemp.uuid}`);
+            handleClose();
+          }}>
+          Generate Report
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            History.push({ pathname: '/new_report', state: { ...singleTemp } });
+            handleClose();
+          }}>
+          Edit Report
+        </MenuItem>
+      </Menu>
+      {loading3 && (
+        <Grid
+          container
+          direction="row"
+          spacing={1}
+          sx={{ mb: 1 }}
+          justifyContent="space-arround"
+          alignItems="baseline">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((res, index) => (
+            <Grid key={res + index} xs={12} sm={6} md={4} lg={3} sx={{ mt: 1 }} item>
+              <Card sx={{ maxWidth: 250 }}>
+                <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />
+                <CardHeader
+                  action={<Skeleton animation="wave" variant="circular" width={40} height={40} />}
+                  title={
+                    <Skeleton
+                      animation="wave"
+                      height={10}
+                      width="80%"
+                      style={{ marginBottom: 6 }}
+                    />
+                  }
+                  subheader={<Skeleton animation="wave" height={10} width="80%" />}
+                />
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </div>
   );
 };

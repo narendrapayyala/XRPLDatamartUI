@@ -9,6 +9,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Add from '@mui/icons-material/Add';
+import Settings from '@mui/icons-material/Settings';
 import Home from '@mui/icons-material/Home';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -113,6 +114,16 @@ const NavbarLayout = (props) => {
               <Add />
             </ListItemIcon>
             <ListItemText primary="Create a new report" />
+          </ListItemButton>
+          <ListItemButton
+            to="/server"
+            component={Link}
+            role="button"
+            selected={location.pathname === '/server'}>
+            <ListItemIcon>
+              <Settings />
+            </ListItemIcon>
+            <ListItemText primary="Server Config" />
           </ListItemButton>
         </List>
       </Box>

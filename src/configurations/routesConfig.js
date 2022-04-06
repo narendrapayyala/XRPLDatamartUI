@@ -2,9 +2,10 @@ import React from 'react';
 import Utils from '../utils';
 import HomeConfig from '../pages/home/HomeConfig';
 import NewReportConfig from '../pages/reports/NewReportConfig';
+import ServerConfig from '../pages/server/ServerConfig';
 import { Redirect } from 'react-router-dom';
 
-const routeConfigs = [HomeConfig, NewReportConfig];
+const routeConfigs = [HomeConfig, NewReportConfig, ServerConfig];
 
 const routes = [
   ...Utils.generateRoutesFromConfigs(routeConfigs),

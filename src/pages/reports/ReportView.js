@@ -35,6 +35,8 @@ import {
   downloadCSVReport
 } from '../../store/reports/reportsSlice';
 import moment from 'moment';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -62,7 +64,7 @@ const ReportView = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
-  // console.log(fields);
+  // console.log(routeParams);
   useEffect(() => {
     dispatch(clearReportList());
     if (templatesList.length != 0) {
@@ -92,7 +94,7 @@ const ReportView = () => {
         setTemplatedata(target);
       }
     } else {
-      return History.goBack();
+      return History.push('/');
     }
   }, [routeParams.id]);
 
@@ -157,11 +159,29 @@ const ReportView = () => {
           height: 65,
           backgroundColor: 'primary.dark'
         }}>
-        <Grid container direction="row" sx={{ p: 1.5 }}>
+        <Grid
+          container
+          direction="row"
+          justifyContent={'space-between'}
+          sx={{ p: 1.5, mt: 0.5, ml: 1 }}>
           <Grid item>
             <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
               Generate report - {templateData.report_name}
             </Typography>
+          </Grid>
+          <Grid sx={{ mr: 2 }} item>
+            <Tooltip title="Edit Template" arrow>
+              <IconButton
+                onClick={() =>
+                  History.push({ pathname: '/new_report', state: { ...templateData } })
+                }
+                sx={{
+                  color: 'primary.contrastText',
+                  '&:hover': { color: 'primary.main', backgroundColor: 'primary.contrastText' }
+                }}>
+                <Icon>edit</Icon>
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
       </Box>

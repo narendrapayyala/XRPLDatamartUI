@@ -28,7 +28,8 @@ import {
   getEntityList,
   getFieldsList,
   getFiltersList,
-  createReport
+  createReport,
+  updateReport
 } from '../../store/reports/reportsSlice';
 import LinearProgress from '@mui/material/LinearProgress';
 import SelectFields from '../../components/SelectFields';
@@ -40,6 +41,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,9 +61,12 @@ const useStyles = makeStyles((theme) => ({
 
 const NewReport = () => {
   const classes = useStyles();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const initialFields = {
+    id: '',
+    uuid: '',
     report_name: '',
     entity_type: '',
     fields: [],
@@ -82,7 +87,17 @@ const NewReport = () => {
   const [expanded1, setExpanded1] = useState(true);
   const [expanded2, setExpanded2] = useState(true);
   const [expanded3, setExpanded3] = useState(true);
-  // console.log(filterParams);
+  // console.log(location.state);
+
+  const setFormData = (data1, data2) => {
+    Object.keys(data1).map(function (key1) {
+      Object.keys(data2).map(function (key2) {
+        if (key1 === key2) {
+          data1[key1] = data2[key2];
+        }
+      });
+    });
+  };
 
   useEffect(() => {
     dispatch(getEntityList());
@@ -177,6 +192,23 @@ const NewReport = () => {
     'Report Summary'
   ];
 
+  useEffect(() => {
+    if (location.state) {
+      const data = {
+        ...location.state,
+        filters: JSON.parse(location.state.filters).map((res) => res.name),
+        fields: JSON.parse(location.state.fields)
+          .sort((a, b) => a.order - b.order)
+          .map((res) => res.field)
+      };
+      setFormData(initialFields, data);
+    }
+    setForm({
+      ...initialFields
+    });
+    setActiveStep(0);
+  }, [location.state]);
+
   const disableButton = () => {
     setIsFormValid(false);
   };
@@ -189,7 +221,13 @@ const NewReport = () => {
     if (activeStep === 0) {
       await dispatch(getFieldsList(form)).then((res) => {
         if (res.payload && res.payload.length != 0) {
-          setForm({ ...form, fields: [], filters: [] });
+          if (location.state) {
+            if (location.state.entity_type != form.entity_type) {
+              setForm({ ...form, fields: [], filters: [] });
+            }
+          } else {
+            setForm({ ...form, fields: [], filters: [] });
+          }
           setChecked([]);
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
@@ -219,13 +257,20 @@ const NewReport = () => {
           }
         });
       });
-      await dispatch(
-        createReport({
-          ...form,
-          fields: JSON.stringify(target),
-          filters: JSON.stringify(targetFilters)
-        })
-      );
+      const mainTemp = {
+        ...form,
+        fields: JSON.stringify(target),
+        filters: JSON.stringify(targetFilters)
+      };
+      if (!location.state) {
+        delete mainTemp.id;
+        delete mainTemp.uuid;
+        // console.log(mainTemp);
+        await dispatch(createReport(mainTemp));
+      } else {
+        // console.log(mainTemp);
+        await dispatch(updateReport(mainTemp));
+      }
     }
   };
 
@@ -242,10 +287,10 @@ const NewReport = () => {
           height: 65,
           backgroundColor: 'primary.dark'
         }}>
-        <Grid container direction="row" sx={{ p: 1.5 }}>
+        <Grid container direction="row" sx={{ p: 1.5, mt: 0.5, ml: 1 }}>
           <Grid item>
             <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
-              Create new report
+              {location.state ? 'Update report' : 'Create new report'}
             </Typography>
             {/* <Typography sx={{ mt: 1, mr: 1 }} color="primary.contrastText">
               Select one of the queries below to request your report.
@@ -331,6 +376,7 @@ const NewReport = () => {
                       {entityList.map((res, i) => (
                         <Grid key={i} xs={12} sm={6} md={2} item>
                           <FormControlLabel
+                            disabled={location.state ? true : false}
                             value={res.method}
                             control={<Radio />}
                             label={<Typography noWrap>{res.name}</Typography>}
@@ -351,6 +397,10 @@ const NewReport = () => {
                   cmpkey={'select-fields'}
                   fields={form.fields}
                   handleChange={(tmp) => setForm({ ...form, fields: tmp })}
+                  activeStep={activeStep}
+                  updateStatus={
+                    location.state ? location.state.entity_type === form.entity_type : false
+                  }
                 />
               )}
 
@@ -358,9 +408,14 @@ const NewReport = () => {
                 <SelectFields
                   fieldsData={filterParams}
                   filters={true}
+                  isSearch={true}
                   cmpkey={'select-filters'}
                   fields={form.filters}
                   handleChange={(tmp) => setForm({ ...form, filters: tmp })}
+                  activeStep={activeStep}
+                  updateStatus={
+                    location.state ? location.state.entity_type === form.entity_type : false
+                  }
                 />
               )}
 

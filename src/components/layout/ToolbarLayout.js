@@ -113,7 +113,7 @@ const ToolbarLayout = (props) => {
           )}
           <div className={classes.title}>
             <Typography variant="h6">
-              {location.pathname === '/profile' ? 'Profile' : 'Home'}
+              {location.pathname === '/server' ? 'Server Configurations' : 'Home'}
             </Typography>
           </div>
           {user.loginStatus ? (
