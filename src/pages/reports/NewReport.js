@@ -268,7 +268,6 @@ const NewReport = () => {
         // console.log(mainTemp);
         await dispatch(createReport(mainTemp));
       } else {
-        // console.log(mainTemp);
         await dispatch(updateReport(mainTemp));
       }
     }
