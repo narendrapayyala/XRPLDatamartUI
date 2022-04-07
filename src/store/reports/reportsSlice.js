@@ -167,11 +167,11 @@ export const updateReport = createAsyncThunk(
     dispatch(startLoading1());
     try {
       const response = await updateReportService(entityData, data);
-      console.log(response);
+      // console.log(response);
       if (response.status) {
         dispatch(clearLoading1());
         dispatch(showMessage({ message: 'Report updated successfully', variant: 'success' }));
-        dispatch(getTemplatesList());
+        await dispatch(getTemplatesList());
         return history.push(`/report/${data.uuid}`);
       }
       dispatch(clearLoading1());

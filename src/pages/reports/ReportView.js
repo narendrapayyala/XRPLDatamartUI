@@ -159,11 +159,7 @@ const ReportView = () => {
           height: 65,
           backgroundColor: 'primary.dark'
         }}>
-        <Grid
-          container
-          direction="row"
-          justifyContent={'space-between'}
-          sx={{ p: 1.5, mt: 0.5, ml: 1 }}>
+        <Grid container direction="row" justifyContent={'space-between'} sx={{ p: 1.5, mt: 0.5 }}>
           <Grid item>
             <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
               Generate report - {templateData.report_name}
