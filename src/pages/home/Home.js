@@ -157,7 +157,7 @@ const Home = () => {
             <Grid
               container
               direction="row"
-              sx={{ mb: 2, p: 2 }}
+              sx={{ mb: 1, p: 1, pl: 2 }}
               justifyContent="space-between"
               alignItems="baseline">
               <Grid xs={12} item>
@@ -170,7 +170,7 @@ const Home = () => {
               container
               direction="row"
               spacing={1}
-              sx={{ mb: 1 }}
+              sx={{ mb: 1, pl: 2 }}
               justifyContent="space-arround"
               alignItems="baseline">
               {filteredData[key].map((res, index) => (
@@ -259,7 +259,7 @@ const Home = () => {
           container
           direction="row"
           spacing={1}
-          sx={{ mb: 1 }}
+          sx={{ mb: 1, pl: 2 }}
           justifyContent="space-arround"
           alignItems="baseline">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((res, index) => (

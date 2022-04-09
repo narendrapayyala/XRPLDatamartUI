@@ -6,6 +6,7 @@ import auth from './auth/store';
 import message from './messageSlice';
 import dialog from './dialogSlice';
 import reports from './reports/reportsSlice';
+import server from './server/serverSlice';
 
 const createReducer = (asyncReducers) =>
   combineReducers({
@@ -16,6 +17,7 @@ const createReducer = (asyncReducers) =>
     backdrop,
     dialog,
     reports,
+    server,
     ...asyncReducers
   });
 

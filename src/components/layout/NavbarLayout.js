@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import { Link, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 // import { useSelector } from 'react-redux';
+// import { grey } from '@mui/material/colors';
 
 const drawerWidth = 240;
 
@@ -69,7 +70,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 );
 const NavbarLayout = (props) => {
-  const theme = useTheme();
+  // const theme = useTheme();
   const location = useLocation();
   // const role = useSelector(({ auth }) => auth.user.user.user_roles_data[0]);
 
@@ -77,8 +78,7 @@ const NavbarLayout = (props) => {
 
   return (
     <Drawer variant="permanent" open={open}>
-      <Box
-        sx={{ backgroundColor: theme.palette.background.default, width: '100%', height: '100%' }}>
+      <Box sx={{ backgroundColor: '#edf4f780', width: '100%', height: '100%' }}>
         <DrawerHeader>
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
