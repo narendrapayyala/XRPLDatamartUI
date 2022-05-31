@@ -146,6 +146,15 @@ const Home = () => {
                   {res.name}
                 </MenuItem>
               ))}
+              <MenuItem sx={{ textTransform: 'capitalize' }} value={'Sidechains'}>
+                {'Sidechains'}
+              </MenuItem>
+              <MenuItem sx={{ textTransform: 'capitalize' }} value={'Ledger'}>
+                {'Ledger'}
+              </MenuItem>
+              <MenuItem sx={{ textTransform: 'capitalize' }} value={'Non-fungible Tokens, NFTs'}>
+                {'Non-fungible Tokens, NFTs'}
+              </MenuItem>
             </Select>
           </FormControl>
         </Grid>

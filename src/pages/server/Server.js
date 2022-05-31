@@ -110,39 +110,65 @@ const Server = () => {
             <Grid
               container
               direction="row"
-              sx={{ p: 2 }}
+              sx={{ pl: 2, pb: 2, pr: 2 }}
               justifyContent="space-between"
               alignItems="baseline">
-              <Grid xs={12} md={4} item>
+              <Grid xs={12} md={3} item>
                 <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar sx={{ color: 'gray' }}>Devnet:</ListItemAvatar>
+                  <ListItemAvatar sx={{ color: 'gray' }}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      Devnet:
+                    </Typography>
+                  </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={{ mt: 0.3, pl: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                        sx={{ mt: 0.3, pl: 0.5 }}>
                         wss://s.devnet.rippletest.net/
                       </Typography>
                     }
                   />
                 </ListItem>
               </Grid>
-              <Grid xs={12} md={4} item>
+              <Grid xs={12} md={3} item>
                 <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar sx={{ color: 'gray', ml: 2 }}>Testnet:</ListItemAvatar>
+                  <ListItemAvatar sx={{ color: 'gray', ml: 2 }}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      Testnet:
+                    </Typography>
+                  </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={{ mt: 0.3, pl: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                        sx={{ mt: 0.3, pl: 0.5 }}>
                         wss://s.altnet.rippletest.net/
                       </Typography>
                     }
                   />
                 </ListItem>
               </Grid>
-              <Grid xs={12} md={4} item>
+              <Grid xs={12} md={3} item>
                 <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar sx={{ color: 'gray', ml: 2 }}>Mainnet:</ListItemAvatar>
+                  <ListItemAvatar sx={{ color: 'gray', ml: 2 }}>
+                    <Typography variant="caption" display="block" gutterBottom>
+                      Mainnet:
+                    </Typography>
+                  </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={{ mt: 0.3, pl: 0.5 }}>wss://s1.ripple.com/</Typography>
+                      <Typography
+                        variant="caption"
+                        display="block"
+                        gutterBottom
+                        sx={{ mt: 0.3, pl: 0.5 }}>
+                        wss://s1.ripple.com/
+                      </Typography>
                     }
                   />
                 </ListItem>

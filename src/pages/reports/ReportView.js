@@ -113,6 +113,7 @@ const ReportView = () => {
   const options = [];
 
   const handleSubmit = () => {
+    // console.log(templateData);
     const data = {
       id: templateData.id,
       uuid: templateData.uuid,
@@ -121,7 +122,7 @@ const ReportView = () => {
     };
     // console.log(data);
     dispatch(generateReport(data)).then((res) => {
-      //   console.log(res);
+      // console.log(res);
       if (res.payload && res.payload.length != 0) {
         setValue('2');
       }
@@ -153,291 +154,301 @@ const ReportView = () => {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Box
-        sx={{
-          width: '100%',
-          height: 65,
-          backgroundColor: 'primary.dark'
-        }}>
-        <Grid container direction="row" justifyContent={'space-between'} sx={{ p: 1.5, mt: 0.5 }}>
-          <Grid item>
-            <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
-              Generate report - {templateData.report_name}
-            </Typography>
-          </Grid>
-          <Grid sx={{ mr: 2 }} item>
-            <Tooltip title="Edit Template" arrow>
-              <IconButton
-                onClick={() =>
-                  History.push({ pathname: '/new_report', state: { ...templateData } })
-                }
-                sx={{
-                  color: 'primary.contrastText',
-                  '&:hover': { color: 'primary.main', backgroundColor: 'primary.contrastText' }
-                }}>
-                <Icon>edit</Icon>
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ width: '100%', p: 4 }}>
-        <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
-              <Tab label="Request Report" value="1" />
-              <Tab label="Data" value="2" disabled={reportList.length === 0} />
-            </TabList>
+      {templateData && (
+        <>
+          <Box
+            sx={{
+              width: '100%',
+              height: 65,
+              backgroundColor: 'primary.dark'
+            }}>
+            <Grid
+              container
+              direction="row"
+              justifyContent={'space-between'}
+              sx={{ p: 1.5, mt: 0.5 }}>
+              <Grid item>
+                <Typography color="primary.contrastText" variant="h5" fontWeight={'bold'}>
+                  Generate report - {templateData.report_name}
+                </Typography>
+              </Grid>
+              <Grid sx={{ mr: 2 }} item>
+                <Tooltip title="Edit Template" arrow>
+                  <IconButton
+                    onClick={() =>
+                      History.push({ pathname: '/new_report', state: { ...templateData } })
+                    }
+                    sx={{
+                      color: 'primary.contrastText',
+                      '&:hover': { color: 'primary.main', backgroundColor: 'primary.contrastText' }
+                    }}>
+                    <Icon>edit</Icon>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Box>
-          <TabPanel value="1">
-            <Formsy
-              onValidSubmit={handleSubmit}
-              onValid={enableButton}
-              onInvalid={disableButton}
-              ref={formRef}
-              name="registerForm"
-              className={classes.form}>
-              <Box
-                sx={{
-                  '& .MuiTextField-root': {
-                    mb: 1,
-                    mt: 3,
-                    width: '50%',
-                    textTransform: 'capitalize'
-                  },
-                  '& .react-tel-input.focused': { borderColor: theme.palette.primary.main },
-                  pl: 0,
-                  pr: 4,
-                  pb: 1
-                }}>
-                <Grid container direction="row" sx={{ mb: 1 }}>
-                  {filters.map((res, i) =>
-                    res.type != 'boolean' ? (
-                      <Grid key={i} sx={{ width: '100%' }} item>
-                        {res.name === 'accounts' ? (
-                          <>
-                            <Autocomplete
-                              multiple
-                              freeSolo
-                              options={options}
-                              value={form.accounts ? form.accounts : []}
-                              onChange={(event, newValue) => {
-                                setForm({ ...form, accounts: newValue });
-                              }}
-                              renderTags={(value, getTagProps) =>
-                                value.map((option, index) => (
-                                  <Chip
-                                    key={index}
-                                    variant="outlined"
-                                    label={option}
-                                    {...getTagProps({ index })}
-                                  />
-                                ))
-                              }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  variant="outlined"
-                                  fullWidth
-                                  label={'Accounts *'}
-                                  id={res.name}
-                                  name={res.name}
-                                  InputLabelProps={{
-                                    shrink: true
+          <Box sx={{ width: '100%', p: 4 }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
+                  <Tab label="Request Report" value="1" />
+                  <Tab label="Data" value="2" disabled={reportList.length === 0} />
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <Formsy
+                  onValidSubmit={handleSubmit}
+                  onValid={enableButton}
+                  onInvalid={disableButton}
+                  ref={formRef}
+                  name="registerForm"
+                  className={classes.form}>
+                  <Box
+                    sx={{
+                      '& .MuiTextField-root': {
+                        mb: 1,
+                        mt: 3,
+                        width: '50%',
+                        textTransform: 'capitalize'
+                      },
+                      '& .react-tel-input.focused': { borderColor: theme.palette.primary.main },
+                      pl: 0,
+                      pr: 4,
+                      pb: 1
+                    }}>
+                    <Grid container direction="row" sx={{ mb: 1 }}>
+                      {filters.map((res, i) =>
+                        res.type != 'boolean' ? (
+                          <Grid key={i} sx={{ width: '100%' }} item>
+                            {res.name === 'accounts' ? (
+                              <>
+                                <Autocomplete
+                                  multiple
+                                  freeSolo
+                                  options={options}
+                                  value={form.accounts ? form.accounts : []}
+                                  onChange={(event, newValue) => {
+                                    setForm({ ...form, accounts: newValue });
                                   }}
+                                  renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                      <Chip
+                                        key={index}
+                                        variant="outlined"
+                                        label={option}
+                                        {...getTagProps({ index })}
+                                      />
+                                    ))
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="outlined"
+                                      fullWidth
+                                      label={'Accounts *'}
+                                      id={res.name}
+                                      name={res.name}
+                                      InputLabelProps={{
+                                        shrink: true
+                                      }}
+                                    />
+                                  )}
                                 />
-                              )}
-                            />
-                            <Typography variant="caption" color={theme.palette.grey[600]}>
-                              Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
-                              rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
-                            </Typography>
-                          </>
-                        ) : (
-                          <TextFieldFormsy
-                            label={res.name}
-                            id={res.name}
-                            name={res.name}
-                            type={res.type}
-                            value={form[res.name]}
-                            onChange={handleChange}
-                            variant="outlined"
-                            required
-                            fullWidth
-                            // focused
-                            InputLabelProps={{
-                              shrink: true
-                            }}
-                            // size="small"
-                          />
-                        )}
-                      </Grid>
-                    ) : (
-                      <Grid
-                        container
-                        key={i}
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="baseline">
-                        <Grid sx={{ width: '100%', mt: 1, textTransform: 'capitalize' }} item>
-                          <RadioGroupFormsy
-                            row
-                            className={classes.radio}
-                            margin="normal"
-                            label={res.name}
-                            id={res.name}
-                            name={res.name}
-                            type={res.type}
-                            value={form[res.name]}
-                            onChange={handleChange}
-                            variant="outlined"
-                            required
-                            fullWidth
-                            InputLabelProps={{
-                              shrink: true
-                            }}>
-                            <FormControlLabel
-                              value={true}
-                              control={<Radio />}
-                              label={<Typography noWrap>{'Yes'}</Typography>}
-                              sx={{ textTransform: 'capitalize' }}
-                            />
-                            <FormControlLabel
-                              value={false}
-                              control={<Radio />}
-                              label={<Typography noWrap>{'No'}</Typography>}
-                              sx={{ textTransform: 'capitalize' }}
-                            />
-                          </RadioGroupFormsy>
-                        </Grid>
-                      </Grid>
-                    )
-                  )}
-                </Grid>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                <Button
-                  sx={{ mt: 1, mb: 1, px: 4 }}
-                  type="submit"
-                  // fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disabled={
-                    !isFormValid ||
-                    loading1 ||
-                    (templateData.entity_type === 'account_info' && !form.accounts)
-                  }
-                  aria-label="Register"
-                  style={{ textTransform: 'capitalize', fontSize: '16px' }}>
-                  {loading1 ? <CircularProgress size={24} olor="inherit" /> : 'Request Report'}
-                </Button>
-              </Box>
-            </Formsy>
-          </TabPanel>
-          <TabPanel value="2">
-            <Paper sx={{ width: '100%', mb: 2 }}>
-              {(templateData.property_type === 'File Generation' ||
-                templateData.property_type === 'Database Sync') && (
-                <Grid
-                  container
-                  direction="row"
-                  sx={{ mb: 2 }}
-                  justifyContent={'space-between'}
-                  alignItems={'baseline'}>
-                  <Grid item></Grid>
-                  <Grid item>
-                    {templateData.property_type === 'File Generation' &&
-                      templateData.file_generation === 'CSV' && (
-                        <Button
-                          sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
-                          variant="contained"
-                          color="primary"
-                          onClick={() => downloadCSV()}
-                          type="button">
-                          {loading1 ? (
-                            <>
-                              <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                              <span>DOWNLOAD CSV</span>
-                            </>
-                          ) : (
-                            'DOWNLOAD CSV'
-                          )}
-                        </Button>
-                      )}
-                    {templateData.property_type === 'Database Sync' && (
-                      <Button
-                        variant="contained"
-                        sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
-                        startIcon={<Icon>sync</Icon>}
-                        color="primary"
-                        type="button">
-                        Sync
-                      </Button>
-                    )}
-                    {templateData.property_type === 'File Generation' &&
-                      templateData.file_generation === 'PDF' && (
-                        <Button
-                          sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
-                          variant="contained"
-                          color="primary"
-                          type="button">
-                          DOWNLOAD PDF
-                        </Button>
-                      )}
-                  </Grid>
-                </Grid>
-              )}
-              <TableContainer>
-                {reportList.length != 0 && (
-                  <Table sx={{ minWidth: 750 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        {fields
-                          .sort((a, b) => a.order - b.order)
-                          .map((row, i) => (
-                            <TableCell sx={{ textTransform: 'capitalize' }} key={i + 'header'}>
-                              <Typography noWrap>{row.field}</Typography>
-                            </TableCell>
-                          ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {reportList.map((row, i) => (
-                        <TableRow
-                          key={i}
-                          sx={{
-                            '&:last-child td, &:last-child th': { border: 0 }
-                          }}>
-                          {Object.keys(row).map((key, index) => {
-                            const fdata = fields.find((res) => res.field === key);
-                            const type = fdata ? fdata.type : null;
-                            return type && type === 'Boolean' ? (
-                              <TableCell key={row[key] + index + 'body'}>
-                                {row[key] ? 'Yes' : 'No'}
-                              </TableCell>
-                            ) : key === 'time' ? (
-                              <TableCell key={i + index + 'body'}>
-                                <Typography noWrap>
-                                  {moment(row[key]).format('DD-MMM-YYYY HH:MM:SS')}
+                                <Typography variant="caption" color={theme.palette.grey[600]}>
+                                  Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
+                                  rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
                                 </Typography>
-                              </TableCell>
+                              </>
                             ) : (
-                              <TableCell key={i + index + 'body'}>
-                                <Typography noWrap>{row[key]}</Typography>
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </TableContainer>
-            </Paper>
-          </TabPanel>
-        </TabContext>
-      </Box>
+                              <TextFieldFormsy
+                                label={res.name}
+                                id={res.name}
+                                name={res.name}
+                                type={res.type}
+                                value={form[res.name]}
+                                onChange={handleChange}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                // focused
+                                InputLabelProps={{
+                                  shrink: true
+                                }}
+                                // size="small"
+                              />
+                            )}
+                          </Grid>
+                        ) : (
+                          <Grid
+                            container
+                            key={i}
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="baseline">
+                            <Grid sx={{ width: '100%', mt: 1, textTransform: 'capitalize' }} item>
+                              <RadioGroupFormsy
+                                row
+                                className={classes.radio}
+                                margin="normal"
+                                label={res.name}
+                                id={res.name}
+                                name={res.name}
+                                type={res.type}
+                                value={form[res.name]}
+                                onChange={handleChange}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                InputLabelProps={{
+                                  shrink: true
+                                }}>
+                                <FormControlLabel
+                                  value={true}
+                                  control={<Radio />}
+                                  label={<Typography noWrap>{'Yes'}</Typography>}
+                                  sx={{ textTransform: 'capitalize' }}
+                                />
+                                <FormControlLabel
+                                  value={false}
+                                  control={<Radio />}
+                                  label={<Typography noWrap>{'No'}</Typography>}
+                                  sx={{ textTransform: 'capitalize' }}
+                                />
+                              </RadioGroupFormsy>
+                            </Grid>
+                          </Grid>
+                        )
+                      )}
+                    </Grid>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                    <Button
+                      sx={{ mt: 1, mb: 1, px: 4 }}
+                      type="submit"
+                      // fullWidth
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                      disabled={
+                        !isFormValid ||
+                        loading1 ||
+                        (templateData.entity_type === 'account_info' && !form.accounts)
+                      }
+                      aria-label="Register"
+                      style={{ textTransform: 'capitalize', fontSize: '16px' }}>
+                      {loading1 ? <CircularProgress size={24} olor="inherit" /> : 'Request Report'}
+                    </Button>
+                  </Box>
+                </Formsy>
+              </TabPanel>
+              <TabPanel value="2">
+                <Paper sx={{ width: '100%', mb: 2 }}>
+                  {(templateData.property_type === 'File Generation' ||
+                    templateData.property_type === 'Database Sync') && (
+                    <Grid
+                      container
+                      direction="row"
+                      sx={{ mb: 2 }}
+                      justifyContent={'space-between'}
+                      alignItems={'baseline'}>
+                      <Grid item></Grid>
+                      <Grid item>
+                        {templateData.property_type === 'File Generation' &&
+                          templateData.file_generation === 'CSV' && (
+                            <Button
+                              sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                              variant="contained"
+                              color="primary"
+                              onClick={() => downloadCSV()}
+                              type="button">
+                              {loading1 ? (
+                                <>
+                                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                                  <span>DOWNLOAD CSV</span>
+                                </>
+                              ) : (
+                                'DOWNLOAD CSV'
+                              )}
+                            </Button>
+                          )}
+                        {templateData.property_type === 'Database Sync' && (
+                          <Button
+                            variant="contained"
+                            sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                            startIcon={<Icon>sync</Icon>}
+                            color="primary"
+                            type="button">
+                            Sync
+                          </Button>
+                        )}
+                        {templateData.property_type === 'File Generation' &&
+                          templateData.file_generation === 'PDF' && (
+                            <Button
+                              sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                              variant="contained"
+                              color="primary"
+                              type="button">
+                              DOWNLOAD PDF
+                            </Button>
+                          )}
+                      </Grid>
+                    </Grid>
+                  )}
+                  <TableContainer>
+                    {reportList.length != 0 && (
+                      <Table sx={{ minWidth: 750 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            {fields
+                              .sort((a, b) => a.order - b.order)
+                              .map((row, i) => (
+                                <TableCell sx={{ textTransform: 'capitalize' }} key={i + 'header'}>
+                                  <Typography noWrap>{row.field}</Typography>
+                                </TableCell>
+                              ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {reportList.map((row, i) => (
+                            <TableRow
+                              key={i + 'list'}
+                              sx={{
+                                '&:last-child td, &:last-child th': { border: 0 }
+                              }}>
+                              {Object.keys(row).map((key, index) => {
+                                const fdata = fields.find((res) => res.field === key);
+                                const type = fdata ? fdata.type : null;
+                                return type && type === 'Boolean' ? (
+                                  <TableCell key={row[key] + index + 'body' + i}>
+                                    {row[key] ? 'Yes' : 'No'}
+                                  </TableCell>
+                                ) : key === 'time' ? (
+                                  <TableCell key={i + index + 'body'}>
+                                    {row[key] && (
+                                      <Typography noWrap>
+                                        {moment(row[key]).format('DD-MMM-YYYY HH:MM:SS')}
+                                      </Typography>
+                                    )}
+                                  </TableCell>
+                                ) : (
+                                  <TableCell key={i + index + 'body'}>
+                                    {row[key] && <Typography noWrap>{row[key]}</Typography>}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </TableContainer>
+                </Paper>
+              </TabPanel>
+            </TabContext>
+          </Box>
+        </>
+      )}
     </div>
   );
 };

@@ -243,6 +243,7 @@ const NewReport = () => {
             target.push({
               field: res.field,
               field_normalized: res.field_normalized,
+              method: res.method,
               type: res.type,
               order: i
             });
