@@ -130,8 +130,11 @@ const SelectFields = (props) => {
                   }}
                 />
               </TableCell>
-              <TableCell>Field Name</TableCell>
-              <TableCell align="right">Data Type (length)</TableCell>
+              <TableCell>Field</TableCell>
+              {/* {entity_type && entity_type === 'account_info' && (
+                <TableCell align="right">Entity</TableCell>
+              )} */}
+              <TableCell align="right">Type</TableCell>
               <TableCell align="right">Description</TableCell>
             </TableRow>
           </TableHead>
@@ -142,7 +145,7 @@ const SelectFields = (props) => {
 
               return (
                 <TableRow
-                  key={res.field || res.name + i + labelId}
+                  key={res.field + i + labelId + res.method}
                   onClick={(event) =>
                     filters && res.required ? '' : handleClick(event, res.field || res.name)
                   }
@@ -167,6 +170,9 @@ const SelectFields = (props) => {
                     />
                   </TableCell>
                   <TableCell>{res.field || res.name}</TableCell>
+                  {/* {entity_type && entity_type === 'account_info' && (
+                    <TableCell>{res.method === 'account_info' ? 'Acc' : 'Tx'}</TableCell>
+                  )} */}
                   <TableCell align="right">{res.type}</TableCell>
                   <TableCell align="right">{res.description}</TableCell>
                 </TableRow>

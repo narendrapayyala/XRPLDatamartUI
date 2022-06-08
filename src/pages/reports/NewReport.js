@@ -422,6 +422,7 @@ const NewReport = () => {
                   isSearch={true}
                   filters={false}
                   cmpkey={'select-fields'}
+                  entity_type={form.entity_type}
                   fields={form.fields}
                   handleChange={(tmp) => setForm({ ...form, fields: tmp })}
                   activeStep={activeStep}
@@ -437,6 +438,7 @@ const NewReport = () => {
                   filters={true}
                   isSearch={true}
                   cmpkey={'select-filters'}
+                  entity_type={null}
                   fields={form.filters}
                   handleChange={(tmp) => setForm({ ...form, filters: tmp })}
                   activeStep={activeStep}

@@ -65,7 +65,7 @@ const ReportView = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
-  // console.log(routeParams);
+  // console.log(reportList);
   useEffect(() => {
     dispatch(clearReportList());
     if (templatesList.length != 0) {
@@ -443,6 +443,7 @@ const ReportView = () => {
                               }}>
                               {Object.keys(row).map((key, index) => {
                                 const fdata = fields.find((res) => res.field === key);
+                                // console.log(fdata);
                                 const type = fdata ? fdata.type : null;
                                 return type && type === 'Boolean' ? (
                                   <TableCell key={row[key] + index + 'body' + i}>
