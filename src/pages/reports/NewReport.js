@@ -29,7 +29,8 @@ import {
   getFieldsList,
   getFiltersList,
   createReport,
-  updateReport
+  updateReport,
+  dbTestConnection
 } from '../../store/reports/reportsSlice';
 import LinearProgress from '@mui/material/LinearProgress';
 import SelectFields from '../../components/SelectFields';
@@ -42,6 +43,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useLocation } from 'react-router-dom';
+import moment from 'moment';
+import MenuItem from '@mui/material/MenuItem';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,13 +75,24 @@ const NewReport = () => {
     fields: [],
     filters: [],
     property_type: '',
-    file_generation: ''
+    file_generation: '',
+    is_db_sync: false,
+    db_creds: {
+      database_connection: 'mysql',
+      database: '',
+      host: '',
+      port: '',
+      user: '',
+      password: '',
+      ds_date: moment().format('DD-MM-YYYY')
+    }
   };
   const { form, handleChange, setForm } = useForm(initialFields);
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
   const theme = useTheme();
   const loading1 = useSelector(({ loading }) => loading.loading1);
+  const loading2 = useSelector(({ loading }) => loading.loading2);
   const loading3 = useSelector(({ loading }) => loading.loading3);
   const entityList = useSelector(({ reports }) => reports.entityList);
   const fieldsData = useSelector(({ reports }) => reports.fieldsList);
@@ -87,6 +101,7 @@ const NewReport = () => {
   const [expanded1, setExpanded1] = useState(true);
   const [expanded2, setExpanded2] = useState(true);
   const [expanded3, setExpanded3] = useState(true);
+  const [testStatus, setTestStatus] = useState(false);
   // console.log(location.state);
 
   const setFormData = (data1, data2) => {
@@ -199,7 +214,8 @@ const NewReport = () => {
         filters: JSON.parse(location.state.filters).map((res) => res.name),
         fields: JSON.parse(location.state.fields)
           .sort((a, b) => a.order - b.order)
-          .map((res) => res.field)
+          .map((res) => res.field),
+        db_creds: location.state.db_creds ? JSON.parse(location.state.db_creds) : {}
       };
       setFormData(initialFields, data);
     }
@@ -261,7 +277,9 @@ const NewReport = () => {
       const mainTemp = {
         ...form,
         fields: JSON.stringify(target),
-        filters: JSON.stringify(targetFilters)
+        filters: JSON.stringify(targetFilters),
+        is_db_sync: form.property_type == 'Database Sync' ? true : false,
+        db_creds: JSON.stringify(form.db_creds)
       };
       if (!location.state) {
         delete mainTemp.id;
@@ -277,6 +295,14 @@ const NewReport = () => {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const testConnection = async () => {
+    await dispatch(dbTestConnection({ ...form.db_creds })).then((res) => {
+      if (res && res.payload && res.payload.status) {
+        setTestStatus(true);
+      }
+    });
   };
 
   return (
@@ -455,7 +481,7 @@ const NewReport = () => {
                       label={<Typography noWrap>File Generation</Typography>}
                       sx={{ textTransform: 'capitalize' }}
                     />
-                    {form.property_type && (
+                    {form.property_type == 'File Generation' && (
                       <>
                         <RadioGroupFormsy
                           margin="normal"
@@ -488,6 +514,7 @@ const NewReport = () => {
                             <Grid xs={12} sm={6} md={4} item>
                               <FormControlLabel
                                 value={'PDF'}
+                                disabled
                                 control={<Radio size={'small'} />}
                                 label={<Typography noWrap>{'PDF'}</Typography>}
                                 sx={{ textTransform: 'capitalize' }}
@@ -537,12 +564,133 @@ const NewReport = () => {
 
                     <FormControlLabel
                       value={'Database Sync'}
-                      disabled
                       control={<Radio size={'small'} />}
                       label={<Typography noWrap>Database Sync</Typography>}
                       sx={{ textTransform: 'capitalize' }}
                     />
                   </RadioGroupFormsy>
+                  {form.property_type == 'Database Sync' && (
+                    <>
+                      <Grid
+                        container
+                        sx={{
+                          '& .MuiTextField-root': {
+                            mb: 1.5,
+                            mt: 1.5
+                          },
+                          '& .react-tel-input.focused': { borderColor: theme.palette.primary.main },
+                          pl: 4,
+                          pr: 4,
+                          pb: 2,
+                          mt: 1
+                        }}
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="baseline">
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Type of Database"
+                            id="db_creds.database_connection"
+                            name="db_creds.database_connection"
+                            value={form.db_creds.database_connection}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            select
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}>
+                            <MenuItem sx={{ textTransform: 'capitalize' }} value={'mysql'}>
+                              {'MySql'}
+                            </MenuItem>
+                          </TextFieldFormsy>
+                        </Grid>
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Host Name"
+                            autoComplete="true"
+                            id="db_creds.host"
+                            name="db_creds.host"
+                            value={form.db_creds.host}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </Grid>
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Port"
+                            autoComplete="true"
+                            id="db_creds.port"
+                            type="number"
+                            name="db_creds.port"
+                            value={form.db_creds.port}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </Grid>
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Username"
+                            autoComplete="true"
+                            id="db_creds.user"
+                            name="db_creds.user"
+                            value={form.db_creds.user}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </Grid>
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Password"
+                            autoComplete="true"
+                            id="db_creds.password"
+                            name="db_creds.password"
+                            type="password"
+                            value={form.db_creds.password}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </Grid>
+                        <Grid sx={{ width: '60%' }} item>
+                          <TextFieldFormsy
+                            label="Default Schema"
+                            id="db_creds.database"
+                            autoComplete="true"
+                            name="db_creds.database"
+                            value={form.db_creds.database}
+                            onChange={handleChange}
+                            variant="outlined"
+                            required
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </>
+                  )}
                 </Box>
               )}
 
@@ -612,20 +760,56 @@ const NewReport = () => {
                       <Typography>Properties</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <List sx={{ p: 0 }} dense>
-                        <ListItem>
-                          <ListItemText
-                            primary={form.property_type}
-                            secondary={form.file_generation}
-                          />
-                        </ListItem>
-                      </List>
+                      {form.property_type === 'Database Sync' ? (
+                        <List sx={{ p: 0 }} dense>
+                          <ListItem>
+                            <ListItemText
+                              primary={'Type of Database'}
+                              secondary={form.db_creds.database_connection}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText primary={'Host Name'} secondary={form.db_creds.host} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText primary={'Port'} secondary={form.db_creds.port} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText primary={'Username'} secondary={form.db_creds.user} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText primary={'Password'} secondary={form.db_creds.password} />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText
+                              primary={'Default Schema'}
+                              secondary={form.db_creds.database}
+                            />
+                          </ListItem>
+                        </List>
+                      ) : (
+                        <List sx={{ p: 0 }} dense>
+                          <ListItem>
+                            <ListItemText
+                              primary={form.property_type}
+                              secondary={form.file_generation}
+                            />
+                          </ListItem>
+                        </List>
+                      )}
                     </AccordionDetails>
                   </Accordion>
                 </Box>
               )}
 
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  pt: 2
+                }}>
                 <Button
                   color="inherit"
                   variant="contained"
@@ -635,8 +819,28 @@ const NewReport = () => {
                   sx={{ mt: 1, mb: 1, px: 6 }}>
                   Back
                 </Button>
-                <Box sx={{ flex: '1 1 auto' }} />
-
+                {activeStep === 3 && form.property_type == 'Database Sync' ? (
+                  <Button
+                    sx={{ mt: 1, mb: 1, px: 6 }}
+                    type="button"
+                    // fullWidth
+                    variant="contained"
+                    onClick={() => testConnection()}
+                    color="primary"
+                    className={classes.submit}
+                    disabled={
+                      !isFormValid ||
+                      (activeStep === 1 && form.fields.length === 0) ||
+                      (activeStep === 2 && form.filters.length === 0) ||
+                      loading2
+                    }
+                    aria-label="Test Connection"
+                    style={{ textTransform: 'capitalize', fontSize: '16px' }}>
+                    {loading2 ? <CircularProgress size={24} olor="inherit" /> : 'Test Connection'}
+                  </Button>
+                ) : (
+                  <Box sx={{ flex: '1 1 auto' }} />
+                )}
                 <Button
                   sx={{ mt: 1, mb: 1, px: 6 }}
                   type="submit"
@@ -648,6 +852,7 @@ const NewReport = () => {
                     !isFormValid ||
                     (activeStep === 1 && form.fields.length === 0) ||
                     (activeStep === 2 && form.filters.length === 0) ||
+                    (activeStep === 3 && form.property_type == 'Database Sync' && !testStatus) ||
                     loading1
                   }
                   aria-label="Register"

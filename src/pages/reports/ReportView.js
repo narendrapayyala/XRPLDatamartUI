@@ -32,7 +32,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import {
   clearReportList,
   generateReport,
-  downloadCSVReport
+  downloadCSVReport,
+  databaseSync
 } from '../../store/reports/reportsSlice';
 import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
@@ -147,6 +148,22 @@ const ReportView = () => {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
+      }
+    });
+  };
+
+  const dbSync = () => {
+    const data = {
+      id: templateData.id,
+      uuid: templateData.uuid,
+      params: { command: templateData.entity_type, ...form },
+      entity_type: templateData.entity_type
+    };
+    // db_data: JSON.stringify(reportList)
+    // console.log(data);
+    dispatch(databaseSync(data)).then((res) => {
+      if (res && res.payload && res.payload.status) {
+        // console.log(res.payload);
       }
     });
   };
@@ -376,10 +393,18 @@ const ReportView = () => {
                           <Button
                             variant="contained"
                             sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                            onClick={() => dbSync()}
                             startIcon={<Icon>sync</Icon>}
                             color="primary"
                             type="button">
-                            Sync
+                            {loading1 ? (
+                              <>
+                                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                                <span>DB Sync</span>
+                              </>
+                            ) : (
+                              'DB Sync'
+                            )}
                           </Button>
                         )}
                         {templateData.property_type === 'File Generation' &&

@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { showMessage } from '../messageSlice';
-import { startLoading1, clearLoading1, startLoading3, clearLoading3 } from '../loaderSlice';
+import {
+  startLoading1,
+  clearLoading1,
+  startLoading2,
+  clearLoading2,
+  startLoading3,
+  clearLoading3
+} from '../loaderSlice';
 import {
   fetchEntityService,
   fetchFieldsListService,
@@ -9,7 +16,9 @@ import {
   updateReportService,
   fetchTemplatesListService,
   generateReportService,
-  downloadCSVReportService
+  downloadCSVReportService,
+  dbTestConnectionService,
+  databaseSyncService
 } from '../../services/reports/reportService';
 import history from '../../configurations/@history';
 
@@ -250,6 +259,66 @@ export const downloadCSVReport = createAsyncThunk(
   }
 );
 
+export const dbTestConnection = createAsyncThunk(
+  'reports/dbTestConnection',
+  async (data, { dispatch }) => {
+    dispatch(startLoading2());
+    try {
+      const response = await dbTestConnectionService(data);
+      // console.log(response);
+      if (response.status) {
+        dispatch(clearLoading2());
+        dispatch(showMessage({ message: 'Connection successful!', variant: 'success' }));
+
+        return response;
+      }
+      dispatch(clearLoading2());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return null;
+    } catch (error) {
+      dispatch(clearLoading2());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return null;
+    }
+  }
+);
+
+export const databaseSync = createAsyncThunk(
+  'reports/databaseSync',
+  async (data, { dispatch, getState }) => {
+    const state = getState().reports;
+    const entityList = state.entityList;
+    const entityData = entityList.find((res) => res.method === data.entity_type);
+    dispatch(startLoading1());
+    try {
+      const response = await databaseSyncService(entityData, data);
+      // console.log(response);
+      if (response) {
+        dispatch(clearLoading1());
+        dispatch(showMessage({ message: 'Sync successfull', variant: 'success' }));
+        return response;
+      }
+      dispatch(clearLoading1());
+      if (response.error) {
+        response.error.message &&
+          dispatch(showMessage({ message: response.error.message, variant: 'error' }));
+      } else {
+        response.message && dispatch(showMessage({ message: response.message, variant: 'error' }));
+      }
+      return null;
+    } catch (error) {
+      dispatch(clearLoading1());
+      error.message && dispatch(showMessage({ message: error.message, variant: 'error' }));
+      return null;
+    }
+  }
+);
+
 const reportsSlice = createSlice({
   name: 'reports',
   initialState: {
@@ -287,6 +356,12 @@ const reportsSlice = createSlice({
       return { ...state, reportList: action.payload };
     },
     [downloadCSVReport.fulfilled]: (state) => {
+      return { ...state };
+    },
+    [dbTestConnection.fulfilled]: (state) => {
+      return { ...state };
+    },
+    [databaseSync.fulfilled]: (state) => {
       return { ...state };
     }
   }

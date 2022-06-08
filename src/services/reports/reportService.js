@@ -60,3 +60,15 @@ export const downloadCSVReportService = (entity, data) =>
     .post(`/${entity.connector}/${entity.route}/csv`, data)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const dbTestConnectionService = (data) =>
+  axiosConfig
+    .post(`/config/db/connection`, data)
+    .then((response) => response.data)
+    .catch(handleResponse);
+
+export const databaseSyncService = (entity, data) =>
+  axiosConfig
+    .post(`/${entity.connector}/${entity.route}/db/sync`, data)
+    .then((response) => response.data)
+    .catch(handleResponse);
