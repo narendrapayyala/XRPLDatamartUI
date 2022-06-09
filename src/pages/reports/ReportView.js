@@ -459,7 +459,16 @@ const ReportView = () => {
                                   </TableCell>
                                 ) : (
                                   <TableCell key={i + index + 'body'}>
-                                    {row[key] && <Typography noWrap>{row[key]}</Typography>}
+                                    {row[key] &&
+                                      (fdata && fdata.field === 'Date(Tx)' ? (
+                                        <Typography noWrap>
+                                          {moment.unix(row[key]).format('DD-MM-YYYY HH:mm')}
+                                        </Typography>
+                                      ) : (
+                                        <Typography noWrap>
+                                          {fdata && fdata.xrp_drops ? row[key] / 1000000 : row[key]}
+                                        </Typography>
+                                      ))}
                                   </TableCell>
                                 );
                               })}

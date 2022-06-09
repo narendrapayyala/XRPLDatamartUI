@@ -261,7 +261,8 @@ const NewReport = () => {
               field_normalized: res.field_normalized,
               method: res.method,
               type: res.type,
-              order: i
+              order: i,
+              xrp_drops: res.xrp_drops
             });
           }
         });
