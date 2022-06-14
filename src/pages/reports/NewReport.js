@@ -412,6 +412,33 @@ const NewReport = () => {
                           />
                         </Grid>
                       ))}
+                      <Grid xs={12} sm={6} md={2} item>
+                        <FormControlLabel
+                          disabled={true}
+                          value={'Sidechains'}
+                          control={<Radio />}
+                          label={<Typography noWrap>{'Sidechains'}</Typography>}
+                          sx={{ textTransform: 'capitalize' }}
+                        />
+                      </Grid>
+                      <Grid xs={12} sm={6} md={2} item>
+                        <FormControlLabel
+                          disabled={true}
+                          value={'Ledger'}
+                          control={<Radio />}
+                          label={<Typography noWrap>{'Ledger'}</Typography>}
+                          sx={{ textTransform: 'capitalize' }}
+                        />
+                      </Grid>
+                      <Grid xs={12} sm={6} md={2} item>
+                        <FormControlLabel
+                          disabled={true}
+                          value={'Non-fungible Tokens, NFTs'}
+                          control={<Radio />}
+                          label={<Typography noWrap>{'Non-fungible Tokens, NFTs'}</Typography>}
+                          sx={{ textTransform: 'capitalize' }}
+                        />
+                      </Grid>
                     </Grid>
                   </RadioGroupFormsy>
                 </Box>

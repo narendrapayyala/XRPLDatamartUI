@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "xrpl-datamart"
-  }
+    "default": "test-xrplreporting",
+    "prod": "test-xrplreporting"
+  },
+  "targets": {}
 }

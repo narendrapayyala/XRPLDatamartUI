@@ -83,7 +83,7 @@ const NavbarLayout = (props) => {
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography sx={{ ml: 1 }} fontWeight={'bold'} variant="h6">
-                XRPL Datamart
+                XRPL Reporting
               </Typography>
             </Grid>
             <Grid item>
