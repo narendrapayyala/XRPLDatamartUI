@@ -298,7 +298,7 @@ export const databaseSync = createAsyncThunk(
     try {
       const response = await databaseSyncService(entityData, data);
       // console.log(response);
-      if (response) {
+      if (response.status) {
         dispatch(clearLoading1());
         dispatch(showMessage({ message: 'Sync successfull', variant: 'success' }));
         return response;
