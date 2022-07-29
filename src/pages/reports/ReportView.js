@@ -76,12 +76,23 @@ const ReportView = () => {
         const iniFields = target2.reduce((obj, item) => ({ ...obj, [item.name]: '' }), {});
         const fieldsTarget = JSON.parse(target.fields);
         // console.log(target);
-        if (target.entity_type === 'account_info') {
+        if (target.entity_type === 'account_info' || target.entity_type === 'account_nfts') {
           const tmp = { ...iniFields, accounts: [] };
           delete tmp.account;
           const tmp1 = target2.map((res) => {
             if (res.name === 'account') {
               return { ...res, name: 'accounts' };
+            }
+            return res;
+          });
+          setInitialFields(tmp);
+          setFilters(tmp1);
+        } else if (target.entity_type === 'nft_offers') {
+          const tmp = { ...iniFields, nfts: [] };
+          delete tmp.account;
+          const tmp1 = target2.map((res) => {
+            if (res.name === 'nfts') {
+              return { ...res, name: 'nfts' };
             }
             return res;
           });
@@ -272,9 +283,55 @@ const ReportView = () => {
                                     />
                                   )}
                                 />
+                                {templateData.entity_type === 'account_info' && (
+                                  <Typography variant="caption" color={theme.palette.grey[600]}>
+                                    Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
+                                    rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
+                                  </Typography>
+                                )}
+                                {templateData.entity_type === 'account_nfts' && (
+                                  <Typography variant="caption" color={theme.palette.grey[600]}>
+                                    Eg: rLN9HFTEminkNqKm2pfVTE8HbXwqsU1fRb
+                                  </Typography>
+                                )}
+                              </>
+                            ) : res.name === 'nfts' ? (
+                              <>
+                                <Autocomplete
+                                  multiple
+                                  freeSolo
+                                  options={options}
+                                  value={form.nfts ? form.nfts : []}
+                                  onChange={(event, newValue) => {
+                                    setForm({ ...form, nfts: newValue });
+                                  }}
+                                  renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                      <Chip
+                                        key={index}
+                                        variant="outlined"
+                                        label={option}
+                                        {...getTagProps({ index })}
+                                      />
+                                    ))
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="outlined"
+                                      fullWidth
+                                      label={'Nfts *'}
+                                      id={res.name}
+                                      name={res.name}
+                                      InputLabelProps={{
+                                        shrink: true
+                                      }}
+                                    />
+                                  )}
+                                />
                                 <Typography variant="caption" color={theme.palette.grey[600]}>
-                                  Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
-                                  rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
+                                  Eg:
+                                  00080000BDAE84EB59DDF4132C4C1BFFEFC63E9AF95D7FC80000099B00000000
                                 </Typography>
                               </>
                             ) : (
