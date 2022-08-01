@@ -15,4 +15,8 @@ cd XRPLDatamartUI
 
 3. `npm install`
 
-4. `npm start`
+4. `npm run lint:fix`
+
+5. `npm format`
+
+6. `npm start`
