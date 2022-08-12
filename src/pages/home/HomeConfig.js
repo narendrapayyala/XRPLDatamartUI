@@ -23,7 +23,7 @@ const HomeConfig = {
       }
     }
   },
-  auth: authRoles.onlyGuest,
+  auth: authRoles.user,
   routes: [
     {
       path: '/home',

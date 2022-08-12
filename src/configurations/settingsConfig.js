@@ -3,25 +3,25 @@ const settingsConfig = {
     style: 'layout1',
     config: {
       navbar: {
-        display: true,
+        display: false,
         folded: false,
         position: 'left'
       },
       toolbar: {
-        display: true,
+        display: false,
         style: 'fixed',
         position: 'below'
       },
       footer: {
-        display: true,
+        display: false,
         style: 'fixed',
         position: 'below'
       },
       leftSidePanel: {
-        display: true
+        display: false
       },
       rightSidePanel: {
-        display: true
+        display: false
       }
     }
   }

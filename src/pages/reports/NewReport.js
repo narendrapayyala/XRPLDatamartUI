@@ -858,7 +858,7 @@ const NewReport = () => {
                     }
                     aria-label="Test Connection"
                     style={{ textTransform: 'capitalize', fontSize: '16px' }}>
-                    {loading2 ? <CircularProgress size={24} olor="inherit" /> : 'Test Connection'}
+                    {loading2 ? <CircularProgress size={24} color="inherit" /> : 'Test Connection'}
                   </Button>
                 ) : (
                   <Box sx={{ flex: '1 1 auto' }} />
@@ -880,7 +880,7 @@ const NewReport = () => {
                   aria-label="Register"
                   style={{ textTransform: 'capitalize', fontSize: '16px' }}>
                   {loading1 ? (
-                    <CircularProgress size={24} olor="inherit" />
+                    <CircularProgress size={24} color="inherit" />
                   ) : activeStep === steps.length - 1 ? (
                     'Finish'
                   ) : (

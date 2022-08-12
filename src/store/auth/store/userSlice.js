@@ -1,18 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import { Auth } from 'aws-amplify';
 import { setInitialSettings } from '../../settingsSlice';
-// import { loginDefault } from './loginSlice';
 import history from '../../../configurations/@history';
-// import { setDefault } from '../../orgSlice';
+import { AUTH } from '../../../configurations/config';
+import { signOut } from 'firebase/auth';
 
 const initialState = {
   role: [], // guest
   data: {
-    displayName: '',
-    photoURL: '',
+    id: '',
     email: '',
-    name: '',
-    org_name: ''
+    photoURL: '',
+    displayName: '',
+    phoneNumber: '',
+    country: '',
+    address: '',
+    state: '',
+    city: '',
+    zipCode: '',
+    about: '',
+    isPublic: false
   },
   user: null,
   loginStatus: false
@@ -31,57 +37,20 @@ const userSlice = createSlice({
 
 export const { setUser, updateUserData, userLoggedOut } = userSlice.actions;
 
-export const logoutUser = () => async (dispatch) => {
-  localStorage.clear();
-
-  // return Auth.signOut({ global: true })
-  //   .then(() => {
-  //     const user = {
-  //       role: [], // guest
-  //       data: initialState.data,
-  //       redirectUrl: '/login',
-  //       user: null,
-  //       loginStatus: false
-  //     };
-  //     // dispatch(setDefault());
-  //     // dispatch(loginDefault());
-  //     dispatch(userLoggedOut());
-  //     dispatch(setInitialSettings());
-  //     if (user.redirectUrl) {
-  //       history.location.state = {
-  //         redirectUrl: user.redirectUrl
-  //       };
-  //     }
-  //     // window.location.reload();
-  //   })
-  //   .catch(() => {
-  //     // console.log(err);
-  //   });
-  const user = {
-    role: [], // guest
-    data: initialState.data,
-    redirectUrl: '/login',
-    user: null,
-    loginStatus: false
-  };
-  // dispatch(setDefault());
-  // dispatch(loginDefault());
-  dispatch(userLoggedOut());
-  dispatch(setInitialSettings());
-  if (user.redirectUrl) {
-    history.location.state = {
-      redirectUrl: user.redirectUrl
-    };
-  }
-  return true;
+export const logoutUser = () => (dispatch) => {
+  return signOut(AUTH)
+    .then(() => {
+      localStorage.clear();
+      dispatch(userLoggedOut());
+      dispatch(setInitialSettings());
+      history.push('/login');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
-export const setUserData = (user) => async (dispatch) => {
-  // if (user.redirectUrl) {
-  //   history.location.state = {
-  //     redirectUrl: user.redirectUrl
-  //   };
-  // }
+export const setUserData = (user) => (dispatch) => {
   if (user.redirectUrl && !user.loginStatus) {
     localStorage.clear();
   }

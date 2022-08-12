@@ -23,7 +23,7 @@ const NewReportConfig = {
       }
     }
   },
-  auth: authRoles.onlyGuest,
+  auth: authRoles.user,
   routes: [
     {
       path: '/new_report',

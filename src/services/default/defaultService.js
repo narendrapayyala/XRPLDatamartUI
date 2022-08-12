@@ -18,3 +18,9 @@ export const fetchUserService = () =>
     .get(`/user`)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const setUserTokenService = (data) =>
+  axiosConfig
+    .post(`/user/token`, data)
+    .then((response) => response.data)
+    .catch(handleResponse);

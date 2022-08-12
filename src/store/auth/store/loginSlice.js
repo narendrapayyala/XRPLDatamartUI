@@ -1,17 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Auth } from 'aws-amplify';
 import { showMessage } from '../../messageSlice';
 import { startLoading1, clearLoading1 } from '../../loaderSlice';
 import { setUserData } from './userSlice';
-import { fetchUserService } from '../../../services/default/defaultService';
-import history from '../../../configurations/@history';
+import { AUTH, DB } from '../../../configurations/config';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { query, getDocs, collection, where, addDoc } from 'firebase/firestore';
+import { setUserTokenService } from '../../../services/default/defaultService';
+
+const googleProvider = new GoogleAuthProvider();
 
 const fieldList = {
-  displayName: '',
-  photoURL: '',
+  id: '',
   email: '',
-  name: '',
-  org_name: ''
+  photoURL: '',
+  displayName: '',
+  phoneNumber: '',
+  country: '',
+  address: '',
+  state: '',
+  city: '',
+  zipCode: '',
+  about: '',
+  isPublic: false
 };
 
 const initialState = {
@@ -57,49 +67,37 @@ export const submitLogin =
   ({ email, password }) =>
   async (dispatch) => {
     dispatch(startLoading1());
-    return Auth.signIn(email, password)
-      .then(async (user) => {
-        if (user && user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-          dispatch(clearLoading1());
-          dispatch(setTempUser(user));
-          history.push({
-            pathname: '/require-new-password'
+    return await signInWithEmailAndPassword(AUTH, email, password)
+      .then(async (res) => {
+        const user = res.user;
+        if (user) {
+          const data = await setUserTokenService({
+            name: user.name || user.displayName || '',
+            email: user.email,
+            token: user.accessToken
           });
-          return user;
-        } else {
-          if (user && user.attributes.email_verified) {
-            const res = await fetchUserService();
-            if (res && res.status) {
-              dispatch(clearLoading1());
-              const role =
-                res.user.user_roles_data[0].role_id === 1
-                  ? 'admin'
-                  : res.user.user_roles_data[0].role_id === 2
-                  ? 'owner'
-                  : 'user';
-              const userData = {
-                role: [role], // guest
-                data: {
-                  ...fieldList,
-                  displayName: user.attributes.name,
-                  photoURL: '',
-                  email: user.attributes.email
-                },
-                user: { ...res.user },
-                redirectUrl:
-                  res.user.user_roles_data[0].role_id === 1
-                    ? '/admin'
-                    : res.user.user_roles_data[0].role_id === 2
-                    ? '/home'
-                    : '/user',
-                loginStatus: true
-              };
-              dispatch(setUserData(userData));
-              dispatch(loginSuccess());
-              return user;
-            }
-            return null;
+          if (data.status) {
+            dispatch(clearLoading1());
+
+            const role = 'user';
+            const userData = {
+              role: [role], // guest
+              data: {
+                ...fieldList,
+                id: user?.uid,
+                email: user?.email,
+                photoURL: user?.photoURL,
+                displayName: user?.displayName,
+                phoneNumber: user?.phoneNumber
+              },
+              user: { ...user },
+              redirectUrl: '/home',
+              loginStatus: true
+            };
+            dispatch(setUserData(userData));
+            dispatch(loginSuccess());
           }
+          return user;
         }
         return null;
       })
@@ -116,72 +114,91 @@ export const submitLogin =
       });
   };
 
-export const completeNewPassword =
-  ({ password }) =>
-  async (dispatch, getState) => {
-    const user = getState().auth.login.user;
-    dispatch(startLoading1());
+// export const completeNewPassword =
+//   ({ password }) =>
+//   async (dispatch, getState) => {
+//     const user = getState().auth.login.user;
+//     dispatch(startLoading1());
 
-    return Auth.completeNewPassword(user, password)
-      .then(async (user) => {
-        if (user && user.challengeParam.userAttributes.email_verified) {
-          const res = await fetchUserService();
-          if (res && res.status) {
-            dispatch(clearLoading1());
-            const role =
-              res.user.user_roles_data[0].role_id === 1
-                ? 'admin'
-                : res.user.user_roles_data[0].role_id === 2
-                ? 'owner'
-                : 'user';
-            const userData = {
-              role: [role], // guest
-              data: {
-                ...fieldList,
-                displayName: user.challengeParam.userAttributes.name,
-                photoURL: '',
-                email: user.challengeParam.userAttributes.email
-              },
-              user: { ...res.user },
-              redirectUrl:
-                res.user.user_roles_data[0].role_id === 1
-                  ? '/admin'
-                  : res.user.user_roles_data[0].role_id === 2
-                  ? '/home'
-                  : '/user',
-              loginStatus: true
-            };
-            dispatch(setUserData(userData));
-            dispatch(loginSuccess());
-            dispatch(setTempUser(null));
-            return user;
-          }
-          return null;
-        }
-        return null;
-      })
-      .catch((error) => {
-        dispatch(clearLoading1());
-        dispatch(
-          showMessage({
-            message: 'New Password Error',
-            variant: 'error'
-          })
-        );
-        dispatch(loginError(error));
-        localStorage.clear();
+//     return Auth.completeNewPassword(user, password)
+//       .then(async (user) => {
+//         if (user && user.challengeParam.userAttributes.email_verified) {
+//           const res = await fetchUserService();
+//           if (res && res.status) {
+//             dispatch(clearLoading1());
+//             const role =
+//               res.user.user_roles_data[0].role_id === 1
+//                 ? 'admin'
+//                 : res.user.user_roles_data[0].role_id === 2
+//                 ? 'owner'
+//                 : 'user';
+//             const userData = {
+//               role: [role], // guest
+//               data: {
+//                 ...fieldList,
+//                 displayName: user.challengeParam.userAttributes.name,
+//                 photoURL: '',
+//                 email: user.challengeParam.userAttributes.email
+//               },
+//               user: { ...res.user },
+//               redirectUrl:
+//                 res.user.user_roles_data[0].role_id === 1
+//                   ? '/admin'
+//                   : res.user.user_roles_data[0].role_id === 2
+//                   ? '/home'
+//                   : '/user',
+//               loginStatus: true
+//             };
+//             dispatch(setUserData(userData));
+//             dispatch(loginSuccess());
+//             dispatch(setTempUser(null));
+//             return user;
+//           }
+//           return null;
+//         }
+//         return null;
+//       })
+//       .catch((error) => {
+//         dispatch(clearLoading1());
+//         dispatch(
+//           showMessage({
+//             message: 'New Password Error',
+//             variant: 'error'
+//           })
+//         );
+//         dispatch(loginError(error));
+//         localStorage.clear();
+//       });
+//   };
+
+export const federatedLogin = () => async (dispatch) => {
+  try {
+    const res = await signInWithPopup(AUTH, googleProvider);
+    const user = res.user;
+    if (user) {
+      const data = await setUserTokenService({
+        name: user.name || user.displayName || '',
+        email: user.email,
+        token: user.accessToken
       });
-  };
-
-export const federatedLogin = () => async (dispatch) =>
-  Auth.currentAuthenticatedUser()
-    .then((user) => {
-      dispatch(loginSuccess());
-      return user;
-    })
-    .catch((error) => {
-      dispatch(showMessage({ message: error.message, variant: 'error' }));
-      dispatch(loginError(error));
-    });
+      if (data.status) {
+        const q = query(collection(DB, 'users'), where('uid', '==', user.uid));
+        const docs = await getDocs(q);
+        if (docs.docs.length === 0) {
+          await addDoc(collection(DB, 'users'), {
+            uid: user.uid,
+            name: user.displayName,
+            authProvider: 'google',
+            email: user.email
+          });
+        }
+        await dispatch(loginSuccess());
+      }
+    }
+  } catch (err) {
+    dispatch(showMessage({ message: err.message, variant: 'error' }));
+    dispatch(loginError(err));
+  }
+};
 
 export default loginSlice.reducer;

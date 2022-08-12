@@ -1,44 +1,25 @@
-import { Auth } from 'aws-amplify';
 import { createSlice } from '@reduxjs/toolkit';
 import { showMessage } from '../../messageSlice';
 import history from '../../../configurations/@history';
 import { startLoading1, clearLoading1 } from '../../loaderSlice';
+import { AUTH } from '../../../configurations/config';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
-export const forgotPassword = (username) => async (dispatch) => {
-  dispatch(startLoading1());
-  return Auth.forgotPassword(username)
-    .then((user) => {
-      dispatch(clearLoading1());
-      dispatch(
-        showMessage({
-          message: `Code has been sent to ${user.CodeDeliveryDetails.Destination}`,
-          variant: 'success'
-        })
-      );
-      return user;
-    })
-    .catch((error) => {
-      dispatch(clearLoading1());
-      dispatch(showMessage({ message: error.message, variant: 'error' }));
-    });
-};
-
-export const forgotPasswordSubmit =
-  ({ email, code, new_password }) =>
+export const forgotPassword =
+  ({ email }) =>
   async (dispatch) => {
     dispatch(startLoading1());
-    return Auth.forgotPasswordSubmit(email, code, new_password)
-      .then((user) => {
-        dispatch(clearLoading1());
-        dispatch(showMessage({ message: 'Password reset successfully', variant: 'success' }));
-        history.push('/login');
-        return user;
-      })
-      .catch((error) => {
-        dispatch(clearLoading1());
-        dispatch(showMessage({ message: error.message, variant: 'error' }));
-        dispatch(forgotPasswordError(error));
-      });
+    try {
+      await sendPasswordResetEmail(AUTH, email);
+      dispatch(clearLoading1());
+      dispatch(showMessage({ message: 'Password reset link sent!', variant: 'success' }));
+      dispatch(forgotPasswordSuccess());
+      history.push('/login');
+    } catch (err) {
+      dispatch(clearLoading1());
+      dispatch(showMessage({ message: err.message, variant: 'error' }));
+      dispatch(forgotPasswordError(err));
+    }
   };
 
 const initialState = {

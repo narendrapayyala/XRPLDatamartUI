@@ -411,7 +411,7 @@ const ReportView = () => {
                       }
                       aria-label="Register"
                       style={{ textTransform: 'capitalize', fontSize: '16px' }}>
-                      {loading1 ? <CircularProgress size={24} olor="inherit" /> : 'Request Report'}
+                      {loading1 ? <CircularProgress size={24} color="inherit" /> : 'Request Report'}
                     </Button>
                   </Box>
                 </Formsy>

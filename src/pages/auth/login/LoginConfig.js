@@ -1,15 +1,15 @@
 import React from 'react';
-import { authRoles } from '../../store/auth';
+import { authRoles } from '../../../store/auth';
 
-const ServerConfig = {
+const LoginConfig = {
   settings: {
     layout: {
       config: {
         navbar: {
-          display: true
+          display: false
         },
         toolbar: {
-          display: true
+          display: false
         },
         footer: {
           display: false
@@ -23,13 +23,13 @@ const ServerConfig = {
       }
     }
   },
-  auth: authRoles.user,
+  auth: authRoles.onlyGuest,
   routes: [
     {
-      path: '/server',
-      component: React.lazy(() => import('./Server'))
+      path: '/login',
+      component: React.lazy(() => import('./Login'))
     }
   ]
 };
 
-export default ServerConfig;
+export default LoginConfig;

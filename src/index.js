@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './utils/i18n';
 import './configurations/axiosConfig';
+import './configurations/config';
 
 ReactDOM.render(
   <React.StrictMode>

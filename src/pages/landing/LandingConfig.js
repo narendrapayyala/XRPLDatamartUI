@@ -1,12 +1,12 @@
 import React from 'react';
 import { authRoles } from '../../store/auth';
 
-const ServerConfig = {
+const LandingConfig = {
   settings: {
     layout: {
       config: {
         navbar: {
-          display: true
+          display: false
         },
         toolbar: {
           display: true
@@ -23,13 +23,13 @@ const ServerConfig = {
       }
     }
   },
-  auth: authRoles.user,
+  auth: authRoles.onlyGuest,
   routes: [
     {
-      path: '/server',
-      component: React.lazy(() => import('./Server'))
+      path: '/dashboard',
+      component: React.lazy(() => import('./Landing'))
     }
   ]
 };
 
-export default ServerConfig;
+export default LandingConfig;

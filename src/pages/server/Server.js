@@ -194,7 +194,7 @@ const Server = () => {
             disabled={!isFormValid || loading1}
             aria-label="Register"
             style={{ textTransform: 'capitalize', fontSize: '16px' }}>
-            {loading1 ? <CircularProgress size={24} olor="inherit" /> : 'Save'}
+            {loading1 ? <CircularProgress size={24} color="inherit" /> : 'Save'}
           </Button>
         </Box>
       </Formsy>
