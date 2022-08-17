@@ -21,7 +21,9 @@ const fieldList = {
   city: '',
   zipCode: '',
   about: '',
-  isPublic: false
+  isPublic: false,
+  user_type: '',
+  user_id: null
 };
 
 const initialState = {
@@ -74,12 +76,15 @@ export const submitLogin =
           const data = await setUserTokenService({
             name: user.name || user.displayName || '',
             email: user.email,
-            token: user.accessToken
+            token: user.accessToken,
+            user: user,
+            register: false,
+            login: true
           });
           if (data.status) {
             dispatch(clearLoading1());
 
-            const role = 'user';
+            const role = data.user.user_type;
             const userData = {
               role: [role], // guest
               data: {
@@ -88,7 +93,9 @@ export const submitLogin =
                 email: user?.email,
                 photoURL: user?.photoURL,
                 displayName: user?.displayName,
-                phoneNumber: user?.phoneNumber
+                phoneNumber: user?.phoneNumber,
+                user_type: data.user.user_type,
+                user_id: data.user.id
               },
               user: { ...user },
               redirectUrl: '/home',
@@ -179,7 +186,10 @@ export const federatedLogin = () => async (dispatch) => {
       const data = await setUserTokenService({
         name: user.name || user.displayName || '',
         email: user.email,
-        token: user.accessToken
+        token: user.accessToken,
+        user: user,
+        register: false,
+        login: true
       });
       if (data.status) {
         const q = query(collection(DB, 'users'), where('uid', '==', user.uid));

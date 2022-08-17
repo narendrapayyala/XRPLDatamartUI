@@ -45,7 +45,10 @@ export const submitRegister =
         const data = await setUserTokenService({
           name: user.name || user.displayName || '',
           email: user.email,
-          token: user.accessToken
+          token: user.accessToken,
+          user: user,
+          register: true,
+          login: false
         });
         if (data.status) {
           dispatch(clearLoading1());
@@ -56,7 +59,7 @@ export const submitRegister =
             authProvider: 'local',
             email
           });
-          const role = 'user';
+          const role = data.user.user_type;
           const userData = {
             role: [role], // guest
             data: {
@@ -64,7 +67,9 @@ export const submitRegister =
               email: res.user?.email,
               photoURL: res.user?.photoURL,
               displayName: res.user?.displayName || name,
-              phoneNumber: res.user?.phoneNumber
+              phoneNumber: res.user?.phoneNumber,
+              user_type: data.user.user_type,
+              user_id: data.user.id
             },
             user: { ...res.user },
             redirectUrl: '/home',

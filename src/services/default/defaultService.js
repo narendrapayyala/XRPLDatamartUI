@@ -24,3 +24,9 @@ export const setUserTokenService = (data) =>
     .post(`/user/token`, data)
     .then((response) => response.data)
     .catch(handleResponse);
+
+export const userLogoutService = (data) =>
+  axiosConfig
+    .post(`/user/logout`, data)
+    .then((response) => response.data)
+    .catch(handleResponse);
