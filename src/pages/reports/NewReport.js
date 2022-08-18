@@ -45,6 +45,10 @@ import ListItemText from '@mui/material/ListItemText';
 import { useLocation } from 'react-router-dom';
 import moment from 'moment';
 import MenuItem from '@mui/material/MenuItem';
+import Switch from '@mui/material/Switch';
+import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,6 +81,7 @@ const NewReport = () => {
     property_type: '',
     file_generation: '',
     is_db_sync: false,
+    access_type: 'private',
     db_creds: {
       database_connection: 'mysql',
       database: '',
@@ -97,12 +102,13 @@ const NewReport = () => {
   const entityList = useSelector(({ reports }) => reports.entityList);
   const fieldsData = useSelector(({ reports }) => reports.fieldsList);
   const filterParams = useSelector(({ reports }) => reports.filterParams);
+  const auth = useSelector(({ auth }) => auth.user.data);
   const [checked, setChecked] = useState([]);
   const [expanded1, setExpanded1] = useState(true);
   const [expanded2, setExpanded2] = useState(true);
   const [expanded3, setExpanded3] = useState(true);
   const [testStatus, setTestStatus] = useState(false);
-  // console.log(location.state);
+  // console.log(auth);
 
   const setFormData = (data1, data2) => {
     Object.keys(data1).map(function (key1) {
@@ -219,6 +225,7 @@ const NewReport = () => {
       };
       setFormData(initialFields, data);
     }
+    // console.log(location.state);
     setForm({
       ...initialFields
     });
@@ -433,6 +440,26 @@ const NewReport = () => {
                       </Grid>
                     </Grid>
                   </RadioGroupFormsy>
+                  {auth.user_type === 'admin' && (
+                    <FormControl component="fieldset" sx={{ mt: 4 }}>
+                      <FormLabel component="legend">Is Public? *</FormLabel>
+                      <FormGroup aria-label="position" row>
+                        <FormControlLabel
+                          value={form.access_type}
+                          checked={form.access_type === 'public' ? true : false}
+                          control={<Switch color="primary" />}
+                          label="Public"
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              access_type: e.target.checked ? 'public' : 'private'
+                            })
+                          }
+                          labelPlacement="start"
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  )}
                 </Box>
               )}
 

@@ -43,9 +43,9 @@ export const updateReportService = (entity, data) =>
     .then((response) => response.data)
     .catch(handleResponse);
 
-export const fetchTemplatesListService = () =>
+export const fetchTemplatesListService = (data) =>
   axiosConfig
-    .get(`/entity/report-templates/list`)
+    .get(`/entity/report-templates/list?user_id=${data.user_id}`)
     .then((response) => response.data)
     .catch(handleResponse);
 

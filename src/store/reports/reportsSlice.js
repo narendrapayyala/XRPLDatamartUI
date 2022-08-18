@@ -24,10 +24,12 @@ import history from '../../configurations/@history';
 
 export const getTemplatesList = createAsyncThunk(
   'reports/getTemplatesList',
-  async (id, { dispatch }) => {
+  async (id, { dispatch, getState }) => {
+    const state = getState();
+    const { data } = state.auth.user;
     dispatch(startLoading3());
     try {
-      const response = await fetchTemplatesListService();
+      const response = await fetchTemplatesListService(data);
       // console.log(response);
       if (response.status) {
         dispatch(clearLoading3());
@@ -139,9 +141,12 @@ export const createReport = createAsyncThunk(
     const state = getState().reports;
     const entityList = state.entityList;
     const entityData = entityList.find((res) => res.method === data.entity_type);
+    const auth = getState().auth;
+    const { user_id } = auth.user.data.user_id;
+
     dispatch(startLoading1());
     try {
-      const response = await createReportService(entityData, data);
+      const response = await createReportService(entityData, { ...data, created_by: user_id });
       // console.log(response);
       if (response.status) {
         dispatch(clearLoading1());
@@ -149,7 +154,7 @@ export const createReport = createAsyncThunk(
           showMessage({ message: 'Report template created successfully', variant: 'success' })
         );
 
-        return history.push('/');
+        return history.push('/home');
       }
       dispatch(clearLoading1());
       if (response.error) {
@@ -173,9 +178,11 @@ export const updateReport = createAsyncThunk(
     const state = getState().reports;
     const entityList = state.entityList;
     const entityData = entityList.find((res) => res.method === data.entity_type);
+    const auth = getState().auth;
+    const { user_id } = auth.user.data.user_id;
     dispatch(startLoading1());
     try {
-      const response = await updateReportService(entityData, data);
+      const response = await updateReportService(entityData, { ...data, created_by: user_id });
       // console.log(response);
       if (response.status) {
         dispatch(clearLoading1());

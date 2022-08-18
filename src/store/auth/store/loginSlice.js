@@ -67,9 +67,9 @@ export const { loginSuccess, loginError, loginDefault, setTempUser } = loginSlic
 
 export const submitLogin =
   ({ email, password }) =>
-  async (dispatch) => {
+  (dispatch) => {
     dispatch(startLoading1());
-    return await signInWithEmailAndPassword(AUTH, email, password)
+    return signInWithEmailAndPassword(AUTH, email, password)
       .then(async (res) => {
         const user = res.user;
         if (user) {
@@ -101,8 +101,8 @@ export const submitLogin =
               redirectUrl: '/home',
               loginStatus: true
             };
-            dispatch(setUserData(userData));
-            dispatch(loginSuccess());
+            await dispatch(loginSuccess());
+            await dispatch(setUserData(userData));
           }
           return user;
         }

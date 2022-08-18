@@ -82,7 +82,7 @@ const AuthComp = (props) => {
 
   useEffect(() => {
     authCheck();
-  }, []);
+  }, [authCheck]);
 
   const { children } = props;
 

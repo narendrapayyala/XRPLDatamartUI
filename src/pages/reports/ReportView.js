@@ -106,7 +106,7 @@ const ReportView = () => {
         setTemplatedata(target);
       }
     } else {
-      return History.push('/');
+      return History.push('/home');
     }
   }, [routeParams.id]);
 

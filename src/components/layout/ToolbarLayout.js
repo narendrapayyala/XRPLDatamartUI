@@ -136,7 +136,8 @@ const ToolbarLayout = (props) => {
               </Button>
             </div>
           ) : (
-            user?.data && (
+            user &&
+            user.data && (
               <>
                 <Typography component="span" className="normal-case font-bold flex">
                   {user.data.displayName}

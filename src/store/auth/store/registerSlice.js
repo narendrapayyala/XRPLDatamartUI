@@ -76,8 +76,8 @@ export const submitRegister =
             loginStatus: true
           };
           await dispatch(registerSuccess({ ...res }));
-          await dispatch(setUserData(userData));
           await dispatch(loginSuccess());
+          await dispatch(setUserData(userData));
           history.push(userData.redirectUrl);
         }
       }
