@@ -486,7 +486,7 @@ const ReportView = () => {
                               .sort((a, b) => a.order - b.order)
                               .map((row, i) => (
                                 <TableCell sx={{ textTransform: 'capitalize' }} key={i + 'header'}>
-                                  <Typography noWrap>{row.field}</Typography>
+                                  <Typography noWrap>{row.display_name}</Typography>
                                 </TableCell>
                               ))}
                           </TableRow>
@@ -499,7 +499,7 @@ const ReportView = () => {
                                 '&:last-child td, &:last-child th': { border: 0 }
                               }}>
                               {Object.keys(row).map((key, index) => {
-                                const fdata = fields.find((res) => res.field === key);
+                                const fdata = fields.find((res) => res.display_name === key);
                                 // console.log(fdata);
                                 const type = fdata ? fdata.type : null;
                                 return type && type === 'Boolean' ? (

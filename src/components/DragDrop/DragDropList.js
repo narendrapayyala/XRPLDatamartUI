@@ -6,6 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useTheme } from '@mui/styles';
+import { useSelector } from 'react-redux';
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -20,6 +21,7 @@ const reorder = (list, startIndex, endIndex) => {
 const DragDropList = (props) => {
   const { data, onChangeList, isChekbox, onChangeSelected, checked, setChecked } = props;
   const theme = useTheme();
+  const fieldsData = useSelector(({ reports }) => reports.fieldsList);
 
   const grid = 8;
 
@@ -104,7 +106,10 @@ const DragDropList = (props) => {
                             />
                           </ListItemIcon>
                         )}
-                        <ListItemText id={labelId} primary={`${value}`} />
+                        <ListItemText
+                          id={labelId}
+                          primary={`${fieldsData.find((res) => res.field === value).display_name}`}
+                        />
                       </ListItemButton>
                     </ListItem>
                   )}

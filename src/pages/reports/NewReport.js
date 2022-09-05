@@ -242,7 +242,7 @@ const NewReport = () => {
 
   const handleNext = async () => {
     if (activeStep === 0) {
-      await dispatch(getFieldsList(form)).then((res) => {
+      await dispatch(getFieldsList({ ...form, state: location.state })).then((res) => {
         if (res.payload && res.payload.length != 0) {
           if (location.state) {
             if (location.state.entity_type != form.entity_type) {
@@ -269,7 +269,8 @@ const NewReport = () => {
               method: res.method,
               type: res.type,
               order: i,
-              xrp_drops: res.xrp_drops
+              xrp_drops: res.xrp_drops,
+              display_name: res.display_name
             });
           }
         });
@@ -598,6 +599,7 @@ const NewReport = () => {
                               <Grid xs={12} md={12} item>
                                 <DragDropList
                                   checked={checked}
+                                  fieldsData={fieldsData}
                                   setChecked={(tmp) => setChecked(tmp)}
                                   isChekbox={false}
                                   data={form.fields}
@@ -772,7 +774,14 @@ const NewReport = () => {
                       <List sx={{ p: 0 }} dense>
                         {form.fields.map((res, i) => (
                           <ListItem key={i}>
-                            <ListItemText primary={i + 1 + '. ' + res} />
+                            <ListItemText
+                              primary={
+                                i +
+                                1 +
+                                '. ' +
+                                fieldsData.find((resNew) => resNew.field === res).display_name
+                              }
+                            />
                           </ListItem>
                         ))}
                       </List>

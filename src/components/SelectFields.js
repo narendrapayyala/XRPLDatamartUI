@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,15 +11,19 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { TextFieldFormsy } from './formsy';
 import Checkbox from '@mui/material/Checkbox';
+import { updateFieldsList } from '../store/reports/reportsSlice';
+import { useDispatch } from 'react-redux';
 
 const SelectFields = (props) => {
   const { fields, handleChange, fieldsData, isSearch, cmpkey, filters, activeStep, updateStatus } =
     props;
   const theme = useTheme();
+  const fieldsNewData = useSelector(({ reports }) => reports.fieldsList);
 
   const [search, setSearch] = useState('');
   const [fieldsList, setFieldsList] = useState(fieldsData);
   const [allFieldsList] = useState(fieldsData);
+  const dispatch = useDispatch();
 
   const isSelected = (field) => fields.indexOf(field) !== -1;
 
@@ -84,6 +88,18 @@ const SelectFields = (props) => {
     }
   };
 
+  const handleDsiplayName = (value, fi) => {
+    let data = [...fieldsNewData];
+    data = data.map((res) => {
+      if (res.field === fi) {
+        return { ...res, display_name: value };
+      } else {
+        return { ...res };
+      }
+    });
+    dispatch(updateFieldsList(data));
+  };
+
   return (
     <Box
       sx={{
@@ -134,8 +150,9 @@ const SelectFields = (props) => {
               {/* {entity_type && entity_type === 'account_info' && (
                 <TableCell align="right">Entity</TableCell>
               )} */}
-              <TableCell align="right">Type</TableCell>
-              <TableCell align="right">Description</TableCell>
+              {!filters && <TableCell sx={{ whiteSpace: 'nowrap' }}>Display Name</TableCell>}
+              <TableCell>Type</TableCell>
+              <TableCell>Description</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -146,9 +163,6 @@ const SelectFields = (props) => {
               return (
                 <TableRow
                   key={res.field + i + labelId + res.method}
-                  onClick={(event) =>
-                    filters && res.required ? '' : handleClick(event, res.field || res.name)
-                  }
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}
@@ -163,18 +177,42 @@ const SelectFields = (props) => {
                     <Checkbox
                       disabled={filters ? res.required : false}
                       color="primary"
+                      onClick={(event) =>
+                        filters && res.required ? '' : handleClick(event, res.field || res.name)
+                      }
                       checked={isItemSelected}
                       inputProps={{
                         'aria-labelledby': labelId
                       }}
                     />
                   </TableCell>
-                  <TableCell>{res.field || res.name}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{res.field || res.name}</TableCell>
                   {/* {entity_type && entity_type === 'account_info' && (
                     <TableCell>{res.method === 'account_info' ? 'Acc' : 'Tx'}</TableCell>
                   )} */}
-                  <TableCell align="right">{res.type}</TableCell>
-                  <TableCell align="right">{res.description}</TableCell>
+                  {!filters && (
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      {isItemSelected ? (
+                        <TextFieldFormsy
+                          id={res.display_name}
+                          name={res.display_name}
+                          value={res.display_name}
+                          onChange={(e) => handleDsiplayName(e.target.value, res.field)}
+                          error={res.display_name === ''}
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true
+                          }}
+                        />
+                      ) : (
+                        <>{res.display_name}</>
+                      )}
+                    </TableCell>
+                  )}
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{res.type}</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{res.description}</TableCell>
                 </TableRow>
               );
             })}

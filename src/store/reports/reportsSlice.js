@@ -87,7 +87,26 @@ export const getFieldsList = createAsyncThunk(
       // console.log(response);
       if (response.status) {
         dispatch(clearLoading1());
-        return response.entity_model;
+        if (data.state) {
+          const fields = JSON.parse(data.state.fields);
+          // console.log(fields);
+          const target = response.entity_model.map((res) => {
+            let newtarget = null;
+            fields.map((res1) => {
+              if (res.field === res1.field) {
+                newtarget = { ...res, display_name: res1.display_name };
+              }
+            });
+            if (newtarget) {
+              return newtarget;
+            } else {
+              return { ...res };
+            }
+          });
+          return target;
+        } else {
+          return response.entity_model;
+        }
       }
       dispatch(clearLoading1());
       if (response.error) {
@@ -338,6 +357,9 @@ const reportsSlice = createSlice({
   reducers: {
     clearReportList: (state) => {
       return { ...state, reportList: [] };
+    },
+    updateFieldsList: (state, action) => {
+      return { ...state, fieldsList: action.payload };
     }
   },
   extraReducers: {
@@ -374,6 +396,6 @@ const reportsSlice = createSlice({
   }
 });
 
-export const { clearReportList } = reportsSlice.actions;
+export const { clearReportList, updateFieldsList } = reportsSlice.actions;
 
 export default reportsSlice.reducer;
