@@ -50,7 +50,7 @@ export const submitRegister =
           register: true,
           login: false
         });
-        if (data.status) {
+        if (data?.status) {
           dispatch(clearLoading1());
           await addDoc(collection(DB, 'users'), {
             uid: user.uid,

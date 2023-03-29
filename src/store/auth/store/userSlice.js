@@ -45,7 +45,7 @@ export const logoutUser = () => async (dispatch, getState) => {
   return await signOut(AUTH)
     .then(async () => {
       const data = await userLogoutService({ id: userData.user_id, email: userData.email });
-      if (data.status) {
+      if (data?.status) {
         localStorage.clear();
         await dispatch(userLoggedOut());
         await dispatch(setInitialSettings());

@@ -42,7 +42,7 @@ const AuthComp = (props) => {
           register: false,
           login: true
         });
-        if (data.status) {
+        if (data?.status) {
           axios.defaults.headers.common.token = res.accessToken;
           const role = data.user.user_type;
           const userData = {

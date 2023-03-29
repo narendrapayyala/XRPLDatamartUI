@@ -191,7 +191,7 @@ export const federatedLogin = () => async (dispatch) => {
         register: false,
         login: true
       });
-      if (data.status) {
+      if (data?.status) {
         const q = query(collection(DB, 'users'), where('uid', '==', user.uid));
         const docs = await getDocs(q);
         if (docs.docs.length === 0) {
