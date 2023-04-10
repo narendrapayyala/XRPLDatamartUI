@@ -194,8 +194,8 @@ const SelectFields = (props) => {
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {isItemSelected ? (
                         <TextFieldFormsy
-                          id={res.display_name}
-                          name={res.display_name}
+                          id={res.field}
+                          name={res.field}
                           value={res.display_name}
                           onChange={(e) => handleDsiplayName(e.target.value, res.field)}
                           error={res.display_name === ''}

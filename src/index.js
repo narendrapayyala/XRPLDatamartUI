@@ -6,10 +6,13 @@ import reportWebVitals from './reportWebVitals';
 import './utils/i18n';
 import './configurations/axiosConfig';
 import './configurations/config';
+import { HelmetProvider } from 'react-helmet-async';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

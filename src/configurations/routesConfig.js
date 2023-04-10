@@ -8,6 +8,7 @@ import LandingConfig from '../pages/landing/LandingConfig';
 import LoginConfig from '../pages/auth/login/LoginConfig';
 import SignupConfig from '../pages/auth/signup/SignupConfig';
 import ForgotPasswordConfig from '../pages/auth/forgot-password/ForgotPasswordConfig';
+import Page404Config from '../pages/404/Page404Config';
 
 const routeConfigs = [
   LandingConfig,
@@ -16,7 +17,8 @@ const routeConfigs = [
   SignupConfig,
   HomeConfig,
   NewReportConfig,
-  ServerConfig
+  ServerConfig,
+  Page404Config
 ];
 
 const routes = [
@@ -24,8 +26,8 @@ const routes = [
   {
     path: '/',
     exact: true,
-    // component: React.lazy(() => import('../pages/landing/Landing')),
-    component: () => <Redirect to="/dashboard" />,
+    component: React.lazy(() => import('../pages/RootComponent')),
+    // component: () => <Redirect to="/dashboard" />,
     settings: {
       layout: {
         config: {
@@ -47,6 +49,11 @@ const routes = [
         }
       }
     }
+  },
+  {
+    path: '*',
+    exact: true,
+    component: () => <Redirect to="/404" />
   }
 ];
 

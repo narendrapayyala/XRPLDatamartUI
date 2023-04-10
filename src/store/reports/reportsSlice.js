@@ -84,7 +84,6 @@ export const getFieldsList = createAsyncThunk(
     dispatch(startLoading1());
     try {
       const response = await fetchFieldsListService(entityData);
-      // console.log(response);
       if (response.status) {
         dispatch(clearLoading1());
         if (data.state) {

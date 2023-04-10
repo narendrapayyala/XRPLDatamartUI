@@ -108,7 +108,6 @@ const NewReport = () => {
   const [expanded2, setExpanded2] = useState(true);
   const [expanded3, setExpanded3] = useState(true);
   const [testStatus, setTestStatus] = useState(false);
-  // console.log(auth);
 
   const setFormData = (data1, data2) => {
     Object.keys(data1).map(function (key1) {
@@ -225,7 +224,7 @@ const NewReport = () => {
       };
       setFormData(initialFields, data);
     }
-    // console.log(location.state);
+    // console.log(initialFields);
     setForm({
       ...initialFields
     });
@@ -255,7 +254,7 @@ const NewReport = () => {
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
       });
-      await dispatch(getFiltersList(form));
+      dispatch(getFiltersList(form));
     } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
@@ -294,10 +293,10 @@ const NewReport = () => {
         delete mainTemp.id;
         delete mainTemp.uuid;
         // console.log(mainTemp);
-        await dispatch(createReport(mainTemp));
+        dispatch(createReport(mainTemp));
       } else {
         // console.log(mainTemp);
-        await dispatch(updateReport(mainTemp));
+        dispatch(updateReport(mainTemp));
       }
     }
   };
@@ -375,7 +374,7 @@ const NewReport = () => {
                         label="Report Name"
                         id="report_name"
                         name="report_name"
-                        value={form.report_name}
+                        value={form?.report_name}
                         onChange={handleChange}
                         variant="outlined"
                         required
@@ -643,7 +642,7 @@ const NewReport = () => {
                             label="Type of Database"
                             id="db_creds.database_connection"
                             name="db_creds.database_connection"
-                            value={form.db_creds.database_connection}
+                            value={form?.db_creds?.database_connection}
                             onChange={handleChange}
                             variant="outlined"
                             required
@@ -663,7 +662,7 @@ const NewReport = () => {
                             autoComplete="true"
                             id="db_creds.host"
                             name="db_creds.host"
-                            value={form.db_creds.host}
+                            value={form?.db_creds?.host}
                             onChange={handleChange}
                             variant="outlined"
                             required
@@ -680,7 +679,7 @@ const NewReport = () => {
                             id="db_creds.port"
                             type="number"
                             name="db_creds.port"
-                            value={form.db_creds.port}
+                            value={form?.db_creds?.port}
                             onChange={handleChange}
                             variant="outlined"
                             required
@@ -696,7 +695,7 @@ const NewReport = () => {
                             autoComplete="true"
                             id="db_creds.user"
                             name="db_creds.user"
-                            value={form.db_creds.user}
+                            value={form?.db_creds?.user}
                             onChange={handleChange}
                             variant="outlined"
                             required
@@ -713,7 +712,7 @@ const NewReport = () => {
                             id="db_creds.password"
                             name="db_creds.password"
                             type="password"
-                            value={form.db_creds.password}
+                            value={form?.db_creds?.password}
                             onChange={handleChange}
                             variant="outlined"
                             required
@@ -729,7 +728,7 @@ const NewReport = () => {
                             id="db_creds.database"
                             autoComplete="true"
                             name="db_creds.database"
-                            value={form.db_creds.database}
+                            value={form?.db_creds?.database}
                             onChange={handleChange}
                             variant="outlined"
                             required

@@ -127,7 +127,7 @@ const Server = () => {
                         display="block"
                         gutterBottom
                         sx={{ mt: 0.3, pl: 0.5 }}>
-                        wss://s.devnet.rippletest.net/
+                        wss://s.devnet.rippletest.net:51233/
                       </Typography>
                     }
                   />
@@ -147,7 +147,7 @@ const Server = () => {
                         display="block"
                         gutterBottom
                         sx={{ mt: 0.3, pl: 0.5 }}>
-                        wss://s.altnet.rippletest.net/
+                        wss://s.altnet.rippletest.net:51233/
                       </Typography>
                     }
                   />
@@ -167,7 +167,7 @@ const Server = () => {
                         display="block"
                         gutterBottom
                         sx={{ mt: 0.3, pl: 0.5 }}>
-                        wss://s1.ripple.com/
+                        wss://s1.ripple.com/ (or) wss://s2.ripple.com/
                       </Typography>
                     }
                   />

@@ -50,7 +50,7 @@ class Authorization extends Component {
 
     if (!userRole || userRole.length === 0) {
       history.push({
-        pathname: '/',
+        pathname: '/login',
         state: { redirectUrl: pathname }
       });
     } else {

@@ -61,7 +61,6 @@ const Home = () => {
 
   const ITEM_HEIGHT = 48;
 
-  // console.log(templatesList, entityList);
   useEffect(() => {
     dispatch(getEntityList());
     dispatch(getTemplatesList());
@@ -188,7 +187,7 @@ const Home = () => {
                   lg={3}
                   sx={{ mt: 1 }}
                   item>
-                  <Card sx={{ maxWidth: 250 }}>
+                  <Card sx={{ maxWidth: '85%', backgroundColor: '#edf4f780' }}>
                     <CardMedia
                       onClick={() => History.push(`/report/${res.uuid}`)}
                       sx={{ cursor: 'pointer' }}

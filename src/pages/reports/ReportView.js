@@ -125,11 +125,13 @@ const ReportView = () => {
   const options = [];
 
   const handleSubmit = () => {
-    // console.log(templateData);
     const data = {
       id: templateData.id,
       uuid: templateData.uuid,
-      params: { command: templateData.entity_type, ...form },
+      params:
+        templateData.entity_type === 'nft_offers'
+          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
     // console.log(data);
@@ -145,7 +147,10 @@ const ReportView = () => {
     const data = {
       id: templateData.id,
       uuid: templateData.uuid,
-      params: { command: templateData.entity_type, ...form },
+      params:
+        templateData.entity_type === 'nft_offers'
+          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
     dispatch(downloadCSVReport(data)).then((res) => {
@@ -167,7 +172,10 @@ const ReportView = () => {
     const data = {
       id: templateData.id,
       uuid: templateData.uuid,
-      params: { command: templateData.entity_type, ...form },
+      params:
+        templateData.entity_type === 'nft_offers'
+          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
     // db_data: JSON.stringify(reportList)
@@ -277,6 +285,7 @@ const ReportView = () => {
                                       label={'Accounts *'}
                                       id={res.name}
                                       name={res.name}
+                                      placeholder="Type the account number and enter."
                                       InputLabelProps={{
                                         shrink: true
                                       }}
@@ -285,20 +294,20 @@ const ReportView = () => {
                                 />
                                 {templateData.entity_type === 'account_info' && (
                                   <Typography variant="caption" color={theme.palette.grey[600]}>
-                                    Eg: rETSmijMPXT9fnDbLADZnecxgkoJJ6iKUA,
-                                    rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn
+                                    Eg: rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B,
+                                    rGHUsVMdDCC3o16SY1M7GcDcgf7BpmyZTq
                                   </Typography>
                                 )}
                                 {templateData.entity_type === 'account_nfts' && (
                                   <Typography variant="caption" color={theme.palette.grey[600]}>
-                                    Eg: rLN9HFTEminkNqKm2pfVTE8HbXwqsU1fRb
+                                    Eg: rLwTZj2HLFiB8Xwr56PnHiU8x7oRaWzRAA
                                   </Typography>
                                 )}
                               </>
                             ) : res.name === 'nfts' ? (
                               <>
-                                <Autocomplete
-                                  multiple
+                                {/* <Autocomplete
+                                  // multiple
                                   freeSolo
                                   options={options}
                                   value={form.nfts ? form.nfts : []}
@@ -328,10 +337,28 @@ const ReportView = () => {
                                       }}
                                     />
                                   )}
+                                /> */}
+
+                                <TextFieldFormsy
+                                  label={'Nfts'}
+                                  id={res.name}
+                                  name={res.name}
+                                  type={res.type}
+                                  value={form[res.name]}
+                                  onChange={handleChange}
+                                  variant="outlined"
+                                  required
+                                  fullWidth
+                                  // focused
+                                  InputLabelProps={{
+                                    shrink: true
+                                  }}
+                                  // size="small"
                                 />
+                                <br />
                                 <Typography variant="caption" color={theme.palette.grey[600]}>
                                   Eg:
-                                  00080000BDAE84EB59DDF4132C4C1BFFEFC63E9AF95D7FC80000099B00000000
+                                  00010000D2344EF1B1BE252A728BEA07AF2803B7BA55D1D60000099B00000000
                                 </Typography>
                               </>
                             ) : (
