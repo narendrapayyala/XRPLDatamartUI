@@ -33,11 +33,14 @@ import {
   clearReportList,
   generateReport,
   downloadCSVReport,
-  databaseSync
+  databaseSync,
+  getTemplatesList,
+  getEntityList
 } from '../../store/reports/reportsSlice';
 import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -60,15 +63,22 @@ const ReportView = () => {
   const [filters, setFilters] = useState([]);
   const [value, setValue] = useState('1');
   const loading1 = useSelector(({ loading }) => loading.loading1);
+  const loading3 = useSelector(({ loading }) => loading.loading3);
   const [initialFields, setInitialFields] = useState({});
   const { form, handleChange, setForm } = useForm(initialFields);
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
-  // console.log(reportList);
+  // console.log(routeParams);
+
   useEffect(() => {
+    dispatch(getEntityList());
+    dispatch(getTemplatesList());
     dispatch(clearReportList());
-    if (templatesList.length != 0) {
+  }, []);
+
+  useEffect(() => {
+    if (templatesList.length != 0 && routeParams.id) {
       if (routeParams.id) {
         const target = templatesList.find((res) => String(res.uuid) === String(routeParams.id));
         const target1 = JSON.parse(target.filters);
@@ -105,10 +115,11 @@ const ReportView = () => {
         setFields(fieldsTarget);
         setTemplatedata(target);
       }
-    } else {
-      return History.push('/home');
     }
-  }, [routeParams.id]);
+    // else {
+    //   return History.push('/home');
+    // }
+  }, [templatesList, routeParams.id]);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
@@ -224,6 +235,7 @@ const ReportView = () => {
               </Grid>
             </Grid>
           </Box>
+          {loading3 ? <LinearProgress color="warning" /> : <Box sx={{ py: 0.25 }} />}
           <Box sx={{ width: '100%', p: 4 }}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

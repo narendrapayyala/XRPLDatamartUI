@@ -95,6 +95,7 @@ const Login = (props) => {
   const classes = useStyles(props);
   const dispatch = useDispatch();
   const loading1 = useSelector(({ loading }) => loading.loading1);
+  const loading2 = useSelector(({ loading }) => loading.loading2);
 
   const { form, handleChange, setForm } = useForm({
     email: '',
@@ -262,7 +263,7 @@ const Login = (props) => {
               style={{ fontSize: '16px', marginBottom: '10px', marginTop: '5px' }}
             /> */}
             <GoogleLoginButton
-              text="Login with Google"
+              text={loading2 ? <CircularProgress size={24} color="inherit" /> : 'Login with Google'}
               align="center"
               iconSize="20px"
               size="40px"

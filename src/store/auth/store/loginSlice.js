@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { showMessage } from '../../messageSlice';
-import { startLoading1, clearLoading1 } from '../../loaderSlice';
+import { startLoading1, clearLoading1, startLoading2, clearLoading2 } from '../../loaderSlice';
 import { setUserData } from './userSlice';
 import { AUTH, DB } from '../../../configurations/config';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
@@ -74,7 +74,7 @@ export const submitLogin =
         const user = res.user;
         if (user) {
           const data = await setUserTokenService({
-            name: user.name || user.displayName || '',
+            // name: user.name || user.displayName || '',
             email: user.email,
             token: user.accessToken,
             user: user,
@@ -92,7 +92,7 @@ export const submitLogin =
                 id: user?.uid,
                 email: user?.email,
                 photoURL: user?.photoURL,
-                displayName: user?.displayName,
+                displayName: user?.displayName || data?.user?.name,
                 phoneNumber: user?.phoneNumber,
                 user_type: data.user.user_type,
                 user_id: data.user.id
@@ -179,6 +179,7 @@ export const submitLogin =
 //   };
 
 export const federatedLogin = () => async (dispatch) => {
+  dispatch(startLoading2());
   try {
     const res = await signInWithPopup(AUTH, googleProvider);
     const user = res.user;
@@ -192,20 +193,26 @@ export const federatedLogin = () => async (dispatch) => {
         login: true
       });
       if (data?.status) {
+        dispatch(clearLoading2());
         const q = query(collection(DB, 'users'), where('uid', '==', user.uid));
         const docs = await getDocs(q);
         if (docs.docs.length === 0) {
           await addDoc(collection(DB, 'users'), {
             uid: user.uid,
-            name: user.displayName,
+            name: user.displayName || data?.user?.name,
             authProvider: 'google',
             email: user.email
           });
         }
         await dispatch(loginSuccess());
+      } else {
+        dispatch(clearLoading2());
       }
+    } else {
+      dispatch(clearLoading2());
     }
   } catch (err) {
+    dispatch(clearLoading2());
     dispatch(showMessage({ message: err.message, variant: 'error' }));
     dispatch(loginError(err));
   }

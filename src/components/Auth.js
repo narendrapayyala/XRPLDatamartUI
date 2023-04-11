@@ -36,7 +36,7 @@ const AuthComp = (props) => {
       return onAuthStateChanged(AUTH, async (res) => {
         if (res) {
           const data = await setUserTokenService({
-            name: res.name || res.displayName || '',
+            // name: res.name || res.displayName || 'Nagireddy Mule',
             email: res.email,
             token: res.accessToken,
             user: res,
@@ -53,7 +53,7 @@ const AuthComp = (props) => {
                 id: res?.uid,
                 email: res?.email,
                 photoURL: res?.photoURL || '',
-                displayName: res?.displayName || '',
+                displayName: res?.displayName || data?.user?.name || '',
                 phoneNumber: res?.phoneNumber || '',
                 user_type: data.user.user_type,
                 user_id: data.user.id
@@ -65,6 +65,18 @@ const AuthComp = (props) => {
             dispatch(setUserData(userData));
             setWaitAuthCheck(false);
             // history.push(userData.redirectUrl);
+            resolve();
+          } else {
+            axios.defaults.headers.common.token = null;
+            const userData = {
+              role: [], // guest
+              data: fieldList,
+              redirectUrl: '/login',
+              user: null,
+              loginStatus: false
+            };
+            dispatch(setUserData(userData));
+            setWaitAuthCheck(false);
             resolve();
           }
         } else {

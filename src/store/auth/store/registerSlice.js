@@ -4,7 +4,7 @@ import history from '../../../configurations/@history';
 import { startLoading1, clearLoading1 } from '../../loaderSlice';
 import { AUTH, DB } from '../../../configurations/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { setUserData } from './userSlice';
 import { loginSuccess } from './loginSlice';
 import { setUserTokenService } from '../../../services/default/defaultService';
@@ -43,7 +43,7 @@ export const submitRegister =
       if (res) {
         const user = res.user;
         const data = await setUserTokenService({
-          name: user.name || user.displayName || '',
+          name: user?.displayName || name,
           email: user.email,
           token: user.accessToken,
           user: user,
@@ -52,33 +52,43 @@ export const submitRegister =
         });
         if (data?.status) {
           dispatch(clearLoading1());
-          await addDoc(collection(DB, 'users'), {
+          await setDoc(doc(DB, 'users', user.uid), {
             uid: user.uid,
-            name,
+            name: user?.displayName || data?.user?.name || name,
             displayName: name,
             authProvider: 'local',
             email
+          }).then(async () => {
+            const role = data.user.user_type;
+            const userData = {
+              role: [role], // guest
+              data: {
+                id: res.user?.uid,
+                email: res.user?.email,
+                photoURL: res.user?.photoURL,
+                displayName: name,
+                phoneNumber: res.user?.phoneNumber,
+                user_type: data.user.user_type,
+                user_id: data.user.id
+              },
+              user: { ...res.user },
+              redirectUrl: '/home',
+              loginStatus: true
+            };
+            await dispatch(registerSuccess({ ...res }));
+            await dispatch(loginSuccess());
+            await dispatch(setUserData(userData));
+            history.push(userData.redirectUrl);
           });
-          const role = data.user.user_type;
-          const userData = {
-            role: [role], // guest
-            data: {
-              id: res.user?.uid,
-              email: res.user?.email,
-              photoURL: res.user?.photoURL,
-              displayName: res.user?.displayName || name,
-              phoneNumber: res.user?.phoneNumber,
-              user_type: data.user.user_type,
-              user_id: data.user.id
-            },
-            user: { ...res.user },
-            redirectUrl: '/home',
-            loginStatus: true
-          };
-          await dispatch(registerSuccess({ ...res }));
-          await dispatch(loginSuccess());
-          await dispatch(setUserData(userData));
-          history.push(userData.redirectUrl);
+
+          // const newUserRef = doc(collection(DB, 'users'));
+          // await setDoc(newUserRef, {
+          //   uid: user.uid,
+          //   name: name,
+          //   displayName: name,
+          //   authProvider: 'local',
+          //   email
+          // });
         }
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { setInitialSettings } from '../../settingsSlice';
-import history from '../../../configurations/@history';
+// import history from '../../../configurations/@history';
 import { AUTH } from '../../../configurations/config';
 import { signOut } from 'firebase/auth';
 import { userLogoutService } from '../../../services/default/defaultService';
@@ -48,8 +48,9 @@ export const logoutUser = () => async (dispatch, getState) => {
       if (data?.status) {
         localStorage.clear();
         await dispatch(userLoggedOut());
+        await dispatch({ type: '@@INIT' });
         await dispatch(setInitialSettings());
-        history.push('/login');
+        // history.push('/login');
       }
     })
     .catch((err) => {

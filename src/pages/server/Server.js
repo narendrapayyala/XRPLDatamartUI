@@ -52,7 +52,7 @@ const Server = () => {
   }, []);
 
   useEffect(() => {
-    if (Object.keys(serverData).length != 0) {
+    if (serverData && Object.keys(serverData).length != 0) {
       setForm({ id: serverData.id, uuid: serverData.uuid, url: serverData.url });
     } else {
       setForm({ ...initialFields });
@@ -204,15 +204,17 @@ const Server = () => {
           <List dense={true}>
             <ListItem alignItems="flex-start">
               <ListItemAvatar sx={{ color: 'gray' }}>ID:</ListItemAvatar>
-              <ListItemText primary={<Typography sx={{ mt: 0.3 }}>{serverData.id}</Typography>} />
+              <ListItemText primary={<Typography sx={{ mt: 0.3 }}>{serverData?.id}</Typography>} />
             </ListItem>
             <ListItem alignItems="flex-start">
               <ListItemAvatar sx={{ color: 'gray' }}>UUID:</ListItemAvatar>
-              <ListItemText primary={<Typography sx={{ mt: 0.3 }}>{serverData.uuid}</Typography>} />
+              <ListItemText
+                primary={<Typography sx={{ mt: 0.3 }}>{serverData?.uuid}</Typography>}
+              />
             </ListItem>
             <ListItem alignItems="flex-start">
               <ListItemAvatar sx={{ color: 'gray' }}>URL:</ListItemAvatar>
-              <ListItemText primary={<Typography sx={{ mt: 0.3 }}>{serverData.url}</Typography>} />
+              <ListItemText primary={<Typography sx={{ mt: 0.3 }}>{serverData?.url}</Typography>} />
             </ListItem>
           </List>
         </CardContent>

@@ -142,7 +142,7 @@ const Home = () => {
               <MenuItem value={'All Entities'}>All Entities</MenuItem>
               {entityList.map((res) => (
                 <MenuItem sx={{ textTransform: 'capitalize' }} value={res.method} key={res.method}>
-                  {res.name}
+                  {res?.name}
                 </MenuItem>
               ))}
               <MenuItem sx={{ textTransform: 'capitalize' }} value={'Sidechains'}>
@@ -167,7 +167,7 @@ const Home = () => {
               alignItems="baseline">
               <Grid xs={12} item>
                 <Typography color="primary" variant="h6" sx={{ textTransform: 'capitalize' }}>
-                  {entityList.find((res) => res.method === key).name}
+                  {entityList.find((res) => res.method === key)?.name}
                 </Typography>
               </Grid>
             </Grid>
@@ -269,7 +269,7 @@ const Home = () => {
           alignItems="baseline">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((res, index) => (
             <Grid key={res + index} xs={12} sm={6} md={4} lg={3} sx={{ mt: 1 }} item>
-              <Card sx={{ maxWidth: 250 }}>
+              <Card sx={{ maxWidth: '85%', backgroundColor: '#edf4f780' }}>
                 <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />
                 <CardHeader
                   action={<Skeleton animation="wave" variant="circular" width={40} height={40} />}

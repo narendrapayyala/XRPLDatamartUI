@@ -266,7 +266,7 @@ const Landing = () => {
           alignItems="baseline">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((res, index) => (
             <Grid key={res + index} xs={12} sm={6} md={4} lg={3} sx={{ mt: 1 }} item>
-              <Card sx={{ maxWidth: 250 }}>
+              <Card sx={{ maxWidth: '85%', backgroundColor: '#edf4f780' }}>
                 <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />
                 <CardHeader
                   action={<Skeleton animation="wave" variant="circular" width={40} height={40} />}
