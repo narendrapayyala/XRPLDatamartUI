@@ -171,8 +171,8 @@ export const createReport = createAsyncThunk(
         dispatch(
           showMessage({ message: 'Report template created successfully', variant: 'success' })
         );
-
-        return history.push('/home');
+        // return history.push('/home');
+        return history.push(`/report/${response.template.uuid}`);
       }
       dispatch(clearLoading1());
       if (response.error) {

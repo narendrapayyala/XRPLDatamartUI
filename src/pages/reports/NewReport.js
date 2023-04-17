@@ -519,7 +519,7 @@ const NewReport = () => {
                     }}>
                     <FormControlLabel
                       value={'Api'}
-                      disabled
+                      // disabled
                       control={<Radio size={'small'} />}
                       label={<Typography noWrap>Api</Typography>}
                       sx={{ textTransform: 'capitalize' }}
