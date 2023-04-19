@@ -338,7 +338,7 @@ const NewReport = () => {
         <Stack sx={{ width: '100%' }} spacing={4}>
           <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
             {steps.map((label) => (
-              <Step key={label}>
+              <Step expanded={true} key={label}>
                 <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
               </Step>
             ))}
@@ -369,7 +369,7 @@ const NewReport = () => {
                     sx={{ mb: 2 }}
                     justifyContent="center"
                     alignItems="center">
-                    <Grid sx={{ width: '60%' }} item>
+                    <Grid sm={12} md={8} item>
                       <TextFieldFormsy
                         label="Report Name"
                         id="report_name"

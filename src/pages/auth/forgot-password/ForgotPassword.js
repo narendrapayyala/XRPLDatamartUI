@@ -59,7 +59,7 @@ const ForgotPasswordPage = () => {
   };
 
   const handleSubmit = () => {
-    dispatch(forgotPassword(form.email));
+    dispatch(forgotPassword({ email: form.email }));
   };
 
   return (
