@@ -130,7 +130,7 @@ const Home = () => {
           />
         </Grid>
         <Grid xs={12} md={4} item></Grid>
-        <Grid xs={12} md={4} sx={{ mt: 1 }} item>
+        <Grid xs={12} md={4} sx={{ mt: 1, py: 1 }} item>
           <FormControl sx={{ width: '100%' }} variant="outlined">
             <InputLabel id="category-label-placeholder">Entity Type </InputLabel>
             <Select
@@ -219,9 +219,15 @@ const Home = () => {
                         </Typography>
                       }
                       subheader={
-                        <Typography variant="body2" sx={{ ml: 0.3 }} color="text.secondary">
-                          {res.property_type} - {res.file_generation}
-                        </Typography>
+                        res.property_type === 'Api' ? (
+                          <Typography variant="body2" sx={{ ml: 0.3 }} color="text.secondary">
+                            {res.property_type}
+                          </Typography>
+                        ) : (
+                          <Typography variant="body2" sx={{ ml: 0.3 }} color="text.secondary">
+                            {res.property_type} - {res.file_generation}
+                          </Typography>
+                        )
                       }
                     />
                   </Card>

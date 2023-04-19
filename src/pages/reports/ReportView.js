@@ -72,8 +72,6 @@ const ReportView = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
-  // console.log(templateData);
-
   useEffect(() => {
     dispatch(getEntityList());
     dispatch(getTemplatesList());
@@ -146,7 +144,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -165,7 +163,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -190,7 +188,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -215,7 +213,7 @@ const ReportView = () => {
 
   const codeString = `
   Type: POST
-  Api: ${window.location.origin}/${entityData?.connector}/${entityData?.route}/csv   
+  Api:  ${window.location.origin}/${entityData?.connector}/${entityData?.route}/csv   
 
   Headers: {'token': 'your authorization token'}
 
@@ -225,7 +223,11 @@ const ReportView = () => {
       uuid: ${templateData.uuid},
       params: ${
         templateData.entity_type === 'nft_offers'
-          ? JSON.stringify({ command: templateData.entity_type, nfts: [form.nfts] })
+          ? JSON.stringify({
+              command: templateData.entity_type,
+              ...codeFields,
+              nfts: form.nfts ? [form.nfts] : []
+            })
           : JSON.stringify({
               command: templateData.entity_type,
               ...codeFields
@@ -235,7 +237,7 @@ const ReportView = () => {
     }
 
   Response:
-    Status Code: 200
+    Status Code: 200 ok
     Data: File
 
   `;
@@ -500,6 +502,7 @@ const ReportView = () => {
               <TabPanel value="2">
                 <Paper sx={{ width: '100%', mb: 2 }}>
                   {(templateData.property_type === 'File Generation' ||
+                    templateData.property_type === 'Api' ||
                     templateData.property_type === 'Database Sync') && (
                     <Grid
                       container
@@ -509,24 +512,25 @@ const ReportView = () => {
                       alignItems={'baseline'}>
                       <Grid item></Grid>
                       <Grid item>
-                        {templateData.property_type === 'File Generation' &&
-                          templateData.file_generation === 'CSV' && (
-                            <Button
-                              sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
-                              variant="contained"
-                              color="primary"
-                              onClick={() => downloadCSV()}
-                              type="button">
-                              {loading1 ? (
-                                <>
-                                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                                  <span>DOWNLOAD CSV</span>
-                                </>
-                              ) : (
-                                'DOWNLOAD CSV'
-                              )}
-                            </Button>
-                          )}
+                        {((templateData.property_type === 'File Generation' &&
+                          templateData.file_generation === 'CSV') ||
+                          templateData.property_type === 'Api') && (
+                          <Button
+                            sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => downloadCSV()}
+                            type="button">
+                            {loading1 ? (
+                              <>
+                                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                                <span>DOWNLOAD CSV</span>
+                              </>
+                            ) : (
+                              'DOWNLOAD CSV'
+                            )}
+                          </Button>
+                        )}
                         {templateData.property_type === 'Database Sync' && (
                           <Button
                             variant="contained"
@@ -620,43 +624,47 @@ const ReportView = () => {
               </TabPanel>
             </TabContext>
           </Box>
-          {/* {templateData?.property_type === 'Api' && ( */}
-          <Box sx={{ width: '100%', pl: 4, pr: 4 }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>
-              <Grid
-                container
-                direction="row"
-                sx={{ mx: 2 }}
-                justifyContent={'center'}
-                alignItems={'center'}>
-                <Grid item>
-                  <Typography variant="h6" color={'primary'} sx={{ p: 1, ml: 1 }}>
-                    Api Details
-                  </Typography>
+          {templateData?.property_type === 'Api' && (
+            <Box sx={{ width: '100%', pl: 5, pr: 4 }}>
+              <Paper sx={{ width: '100%', mb: 2 }}>
+                <Grid
+                  container
+                  direction="row"
+                  sx={{ mx: 2 }}
+                  justifyContent={'center'}
+                  alignItems={'center'}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      fontWeight={'bold'}
+                      color={'primary'}
+                      sx={{ p: 1, ml: 1 }}>
+                      Api Details
+                    </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid
-                container
-                direction="row"
-                sx={{ mx: 2 }}
-                justifyContent={'space-between'}
-                alignItems={'baseline'}>
-                <Grid sm={12} item>
-                  <Typography variant="h6">1. Download CSV:</Typography>
+                <Grid
+                  container
+                  direction="row"
+                  sx={{ mx: 2 }}
+                  justifyContent={'space-between'}
+                  alignItems={'baseline'}>
+                  <Grid sm={12} item>
+                    <Typography variant="h6">1. Download CSV:</Typography>
+                  </Grid>
+                  <Grid sx={{ mx: 2, width: '95.5%' }} item>
+                    <SyntaxHighlighter
+                      wrapLines={true}
+                      // wrapLongLines={true}
+                      language="javascript"
+                      style={docco}>
+                      {codeString}
+                    </SyntaxHighlighter>
+                  </Grid>
                 </Grid>
-                <Grid sx={{ mx: 2, width: '95.5%' }} item>
-                  <SyntaxHighlighter
-                    wrapLines={true}
-                    // wrapLongLines={true}
-                    language="javascript"
-                    style={docco}>
-                    {codeString}
-                  </SyntaxHighlighter>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Box>
-          {/* )} */}
+              </Paper>
+            </Box>
+          )}
         </>
       )}
     </div>

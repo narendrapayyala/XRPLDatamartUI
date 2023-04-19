@@ -1,6 +1,9 @@
 import axiosConfig from '../../configurations/axiosConfig';
 
 const handleResponse = (error) => {
+  // if (!error?.response?.data?.auth) {
+  //   return window.location.reload();
+  // }
   if (
     error.response &&
     (error.response.status === 500 ||
