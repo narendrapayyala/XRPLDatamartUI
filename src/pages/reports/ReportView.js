@@ -41,6 +41,8 @@ import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import LinearProgress from '@mui/material/LinearProgress';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -57,6 +59,7 @@ const ReportView = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const templatesList = useSelector(({ reports }) => reports.templatesList);
+  const entityList = useSelector(({ reports }) => reports.entityList);
   const reportList = useSelector(({ reports }) => reports.reportList);
   const [templateData, setTemplatedata] = useState([]);
   const [fields, setFields] = useState([]);
@@ -69,8 +72,6 @@ const ReportView = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef(null);
 
-  // console.log(routeParams);
-
   useEffect(() => {
     dispatch(getEntityList());
     dispatch(getTemplatesList());
@@ -81,39 +82,41 @@ const ReportView = () => {
     if (templatesList.length != 0 && routeParams.id) {
       if (routeParams.id) {
         const target = templatesList.find((res) => String(res.uuid) === String(routeParams.id));
-        const target1 = JSON.parse(target.filters);
-        const target2 = target1.filter((res) => res.name != 'command');
-        const iniFields = target2.reduce((obj, item) => ({ ...obj, [item.name]: '' }), {});
-        const fieldsTarget = JSON.parse(target.fields);
-        // console.log(target);
-        if (target.entity_type === 'account_info' || target.entity_type === 'account_nfts') {
-          const tmp = { ...iniFields, accounts: [] };
-          delete tmp.account;
-          const tmp1 = target2.map((res) => {
-            if (res.name === 'account') {
-              return { ...res, name: 'accounts' };
-            }
-            return res;
-          });
-          setInitialFields(tmp);
-          setFilters(tmp1);
-        } else if (target.entity_type === 'nft_offers') {
-          const tmp = { ...iniFields, nfts: [] };
-          delete tmp.account;
-          const tmp1 = target2.map((res) => {
-            if (res.name === 'nfts') {
-              return { ...res, name: 'nfts' };
-            }
-            return res;
-          });
-          setInitialFields(tmp);
-          setFilters(tmp1);
-        } else {
-          setInitialFields(iniFields);
-          setFilters(target2);
+        if (target) {
+          const target1 = JSON.parse(target.filters);
+          const target2 = target1.filter((res) => res.name != 'command');
+          const iniFields = target2.reduce((obj, item) => ({ ...obj, [item.name]: '' }), {});
+          const fieldsTarget = JSON.parse(target.fields);
+          // console.log(target);
+          if (target.entity_type === 'account_info' || target.entity_type === 'account_nfts') {
+            const tmp = { ...iniFields, accounts: [] };
+            delete tmp.account;
+            const tmp1 = target2.map((res) => {
+              if (res.name === 'account') {
+                return { ...res, name: 'accounts' };
+              }
+              return res;
+            });
+            setInitialFields(tmp);
+            setFilters(tmp1);
+          } else if (target.entity_type === 'nft_offers') {
+            const tmp = { ...iniFields, nfts: [] };
+            delete tmp.account;
+            const tmp1 = target2.map((res) => {
+              if (res.name === 'nfts') {
+                return { ...res, name: 'nfts' };
+              }
+              return res;
+            });
+            setInitialFields(tmp);
+            setFilters(tmp1);
+          } else {
+            setInitialFields(iniFields);
+            setFilters(target2);
+          }
+          setFields(fieldsTarget);
+          setTemplatedata(target);
         }
-        setFields(fieldsTarget);
-        setTemplatedata(target);
       }
     }
     // else {
@@ -141,7 +144,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -160,7 +163,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -185,7 +188,7 @@ const ReportView = () => {
       uuid: templateData.uuid,
       params:
         templateData.entity_type === 'nft_offers'
-          ? { command: templateData.entity_type, nfts: [form.nfts] }
+          ? { command: templateData.entity_type, ...form, nfts: [form.nfts] }
           : { command: templateData.entity_type, ...form },
       entity_type: templateData.entity_type
     };
@@ -197,6 +200,47 @@ const ReportView = () => {
       }
     });
   };
+
+  const entityData = entityList.find((res) => res.method === templateData?.entity_type);
+  let codeFields = {};
+  filters.map((res) => {
+    const field = res.name;
+    return (codeFields = {
+      ...codeFields,
+      [field]: form[field] ? form[field] : field === 'accounts' || field === 'nfts' ? [] : ''
+    });
+  });
+
+  const codeString = `
+  Type: POST
+  Api:  ${window.location.origin}/${entityData?.connector}/${entityData?.route}/csv   
+
+  Headers: {'token': 'your authorization token'}
+
+  Request: 
+    {
+      id: ${templateData.id},
+      uuid: ${templateData.uuid},
+      params: ${
+        templateData.entity_type === 'nft_offers'
+          ? JSON.stringify({
+              command: templateData.entity_type,
+              ...codeFields,
+              nfts: form.nfts ? [form.nfts] : []
+            })
+          : JSON.stringify({
+              command: templateData.entity_type,
+              ...codeFields
+            })
+      },
+      entity_type: ${templateData.entity_type}
+    }
+
+  Response:
+    Status Code: 200 ok
+    Data: File
+
+  `;
 
   return (
     <div className={classes.root}>
@@ -236,7 +280,7 @@ const ReportView = () => {
             </Grid>
           </Box>
           {loading3 ? <LinearProgress color="warning" /> : <Box sx={{ py: 0.25 }} />}
-          <Box sx={{ width: '100%', p: 4 }}>
+          <Box sx={{ width: '100%', p: 2 }}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
@@ -370,7 +414,7 @@ const ReportView = () => {
                                 <br />
                                 <Typography variant="caption" color={theme.palette.grey[600]}>
                                   Eg:
-                                  00010000D2344EF1B1BE252A728BEA07AF2803B7BA55D1D60000099B00000000
+                                  00080000D2344EF1B1BE252A728BEA07AF2803B7BA55D1D644B17C9E00000003
                                 </Typography>
                               </>
                             ) : (
@@ -437,7 +481,7 @@ const ReportView = () => {
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Button
-                      sx={{ mt: 1, mb: 1, px: 4 }}
+                      sx={{ mt: 1, mb: 0, px: 4 }}
                       type="submit"
                       // fullWidth
                       variant="contained"
@@ -458,6 +502,7 @@ const ReportView = () => {
               <TabPanel value="2">
                 <Paper sx={{ width: '100%', mb: 2 }}>
                   {(templateData.property_type === 'File Generation' ||
+                    templateData.property_type === 'Api' ||
                     templateData.property_type === 'Database Sync') && (
                     <Grid
                       container
@@ -467,24 +512,25 @@ const ReportView = () => {
                       alignItems={'baseline'}>
                       <Grid item></Grid>
                       <Grid item>
-                        {templateData.property_type === 'File Generation' &&
-                          templateData.file_generation === 'CSV' && (
-                            <Button
-                              sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
-                              variant="contained"
-                              color="primary"
-                              onClick={() => downloadCSV()}
-                              type="button">
-                              {loading1 ? (
-                                <>
-                                  <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                                  <span>DOWNLOAD CSV</span>
-                                </>
-                              ) : (
-                                'DOWNLOAD CSV'
-                              )}
-                            </Button>
-                          )}
+                        {((templateData.property_type === 'File Generation' &&
+                          templateData.file_generation === 'CSV') ||
+                          templateData.property_type === 'Api') && (
+                          <Button
+                            sx={{ mx: 2, color: theme.palette.primary.contrastText, mt: 1 }}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => downloadCSV()}
+                            type="button">
+                            {loading1 ? (
+                              <>
+                                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                                <span>DOWNLOAD CSV</span>
+                              </>
+                            ) : (
+                              'DOWNLOAD CSV'
+                            )}
+                          </Button>
+                        )}
                         {templateData.property_type === 'Database Sync' && (
                           <Button
                             variant="contained"
@@ -578,6 +624,47 @@ const ReportView = () => {
               </TabPanel>
             </TabContext>
           </Box>
+          {templateData?.property_type === 'Api' && (
+            <Box sx={{ width: '100%', pl: 5, pr: 4 }}>
+              <Paper sx={{ width: '100%', mb: 2 }}>
+                <Grid
+                  container
+                  direction="row"
+                  sx={{ mx: 2 }}
+                  justifyContent={'center'}
+                  alignItems={'center'}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      fontWeight={'bold'}
+                      color={'primary'}
+                      sx={{ p: 1, ml: 1 }}>
+                      Api Details
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid
+                  container
+                  direction="row"
+                  sx={{ mx: 2 }}
+                  justifyContent={'space-between'}
+                  alignItems={'baseline'}>
+                  <Grid sm={12} item>
+                    <Typography variant="h6">1. Download CSV:</Typography>
+                  </Grid>
+                  <Grid sx={{ mx: 2, width: '95.5%' }} item>
+                    <SyntaxHighlighter
+                      wrapLines={true}
+                      // wrapLongLines={true}
+                      language="javascript"
+                      style={docco}>
+                      {codeString}
+                    </SyntaxHighlighter>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Box>
+          )}
         </>
       )}
     </div>

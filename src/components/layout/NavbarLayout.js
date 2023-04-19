@@ -79,15 +79,17 @@ const NavbarLayout = (props) => {
   return (
     <Drawer variant="permanent" open={open}>
       <Box sx={{ backgroundColor: '#edf4f780', width: '100%', height: '100%' }}>
-        <DrawerHeader>
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+        <DrawerHeader sx={{ m: 0, p: 0 }}>
+          <Grid container direction="row" justifyContent="center" alignItems="center">
             <Grid item>
-              <Typography sx={{ ml: 1 }} fontWeight={'bold'} variant="h6">
-                XRPL Reporting
-              </Typography>
+              {open && (
+                <Typography sx={{ mr: 1 }} fontWeight={'bold'} variant="h6">
+                  XRPL Reporting
+                </Typography>
+              )}
             </Grid>
             <Grid item>
-              <IconButton color="inherit" onClick={() => handleDrawerClose()}>
+              <IconButton color="inherit" sx={{ ml: 1 }} onClick={() => handleDrawerClose()}>
                 {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
               </IconButton>
             </Grid>

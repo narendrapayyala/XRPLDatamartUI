@@ -40,6 +40,7 @@ const userSlice = createSlice({
 export const { setUser, updateUserData, userLoggedOut } = userSlice.actions;
 
 export const logoutUser = () => async (dispatch, getState) => {
+  console.log('hi');
   const state = getState();
   const userData = state.auth.user.data;
   return await signOut(AUTH)

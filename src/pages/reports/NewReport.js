@@ -338,12 +338,12 @@ const NewReport = () => {
         <Stack sx={{ width: '100%' }} spacing={4}>
           <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
             {steps.map((label) => (
-              <Step key={label}>
+              <Step expanded={true} key={label}>
                 <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
-          <Box sx={{ p: 4 }}>
+          <Box sx={{ p: 5 }}>
             <Formsy
               onValidSubmit={handleNext}
               onValid={enableButton}
@@ -369,7 +369,7 @@ const NewReport = () => {
                     sx={{ mb: 2 }}
                     justifyContent="center"
                     alignItems="center">
-                    <Grid sx={{ width: '60%' }} item>
+                    <Grid sm={12} md={8} item>
                       <TextFieldFormsy
                         label="Report Name"
                         id="report_name"
@@ -410,7 +410,7 @@ const NewReport = () => {
                       spacing={4}
                       alignItems="baseline">
                       {entityList.map((res, i) => (
-                        <Grid key={i} xs={12} sm={6} md={2} item>
+                        <Grid key={i} xs={12} sm={6} md={3} lg={2} item>
                           <FormControlLabel
                             disabled={location.state ? true : false}
                             value={res.method}
@@ -420,7 +420,7 @@ const NewReport = () => {
                           />
                         </Grid>
                       ))}
-                      <Grid xs={12} sm={6} md={2} item>
+                      <Grid xs={12} sm={6} md={3} lg={2} item>
                         <FormControlLabel
                           disabled={true}
                           value={'Sidechains'}
@@ -429,7 +429,7 @@ const NewReport = () => {
                           sx={{ textTransform: 'capitalize' }}
                         />
                       </Grid>
-                      <Grid xs={12} sm={6} md={2} item>
+                      <Grid xs={12} sm={6} md={3} lg={2} item>
                         <FormControlLabel
                           disabled={true}
                           value={'Ledger'}
@@ -519,7 +519,7 @@ const NewReport = () => {
                     }}>
                     <FormControlLabel
                       value={'Api'}
-                      disabled
+                      // disabled
                       control={<Radio size={'small'} />}
                       label={<Typography noWrap>Api</Typography>}
                       sx={{ textTransform: 'capitalize' }}

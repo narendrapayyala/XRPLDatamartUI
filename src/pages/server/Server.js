@@ -115,7 +115,7 @@ const Server = () => {
               alignItems="baseline">
               <Grid xs={12} md={3} item>
                 <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar sx={{ color: 'gray' }}>
+                  <ListItemAvatar sx={{ color: 'gray', ml: 2 }}>
                     <Typography variant="caption" display="block" gutterBottom>
                       Devnet:
                     </Typography>
@@ -199,7 +199,7 @@ const Server = () => {
         </Box>
       </Formsy>
       <br />
-      <Card sx={{ minWidth: 360, m: 2 }}>
+      <Card sx={{ minWidth: '90%', m: 2 }}>
         <CardContent>
           <List dense={true}>
             <ListItem alignItems="flex-start">

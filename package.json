@@ -36,6 +36,7 @@
     "react-router-dom": "5.2.1",
     "react-scripts": "5.0.0",
     "react-social-login-buttons": "^3.6.0",
+    "react-syntax-highlighter": "^15.5.0",
     "recharts": "^2.1.9",
     "redux-logger": "^3.0.6",
     "styled-components": "^5.3.3",
